@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitara Coffee</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     CART DRAWER
+═══════════════════════════════════════ -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <h2>Your <span>Cart</span></h2>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list">
+    <div class="cart-empty">
+      <div class="empty-icon">🛒</div>
+      <p>Your cart is empty</p>
+      <a onclick="closeCart(); showPage('menu')">Browse our menu →</a>
+    </div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none">
+    <div class="cart-row"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
+    <div class="cart-row"><span>Taxes (5%)</span><span id="cart-tax">₹0</span></div>
+    <div class="cart-row"><span>Packaging</span><span id="cart-packaging">₹0</span></div>
+    <div class="cart-total-row"><span>Total</span><span id="cart-grand-total">₹0</span></div>
+    <button class="checkout-btn" onclick="closeCart(); showPage('order')">Proceed to Checkout →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAV
+═══════════════════════════════════════ -->
+<nav>
+  <div class="logo">Sitara <span>Coffee</span></div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')">Home</a></li>
+    <li><a onclick="showPage('menu')">Menu</a></li>
+    <li><a onclick="showPage('order')">Order</a></li>
+    <li><a onclick="showPage('about')">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-nav-btn" onclick="openCart()">
+      🛒
+      <div class="cart-badge" id="cart-count">0</div>
+    </button>
+    <button class="nav-btn" onclick="showPage('login')">Sign In</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     HOME
+═══════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow">★ &nbsp; Est. 2018 &nbsp; ★ &nbsp; Kadiri's Finest</div>
+      <h1 class="hero-title">Brewed with<br><em>Passion &amp; Soul</em></h1>
+      <p class="hero-desc">From single-origin beans to artisan blends — every cup at Sitara Coffee is a journey through flavour, crafted just for you.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('menu')">Explore Menu</button>
+        <button class="btn-ghost" onclick="openCart()">View Cart 🛒</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="coffee-art">
+        <div class="cup-wrapper">
+          <div class="steam">
+            <div class="steam-line"></div>
+            <div class="steam-line"></div>
+            <div class="steam-line"></div>
+          </div>
+          <svg class="cup-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="cupGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6B3F22"/>
+                <stop offset="100%" style="stop-color:#2C1A0E"/>
+              </linearGradient>
+              <radialGradient id="coffeeGrad" cx="50%" cy="40%" r="50%">
+                <stop offset="0%" style="stop-color:#8B5E3C"/>
+                <stop offset="100%" style="stop-color:#4B2E14"/>
+              </radialGradient>
+            </defs>
+            <ellipse cx="100" cy="175" rx="65" ry="10" fill="#3D2010"/>
+            <ellipse cx="100" cy="173" rx="55" ry="7" fill="#5B3418"/>
+            <path d="M50 90 Q45 155 75 168 Q100 175 125 168 Q155 155 150 90 Z" fill="url(#cupGrad)"/>
+            <ellipse cx="100" cy="90" rx="50" ry="14" fill="url(#coffeeGrad)"/>
+            <ellipse cx="100" cy="90" rx="30" ry="8" fill="#C9943A" opacity="0.3"/>
+            <path d="M85 90 Q100 83 115 90" stroke="#C9943A" stroke-width="1.5" fill="none" opacity="0.5"/>
+            <path d="M148 108 Q175 108 175 130 Q175 152 148 152" stroke="#5B3418" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M65 100 Q62 130 68 155" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <text x="85" y="96" font-size="10" fill="#C9943A" opacity="0.8">✦</text>
+          </svg>
+        </div>
+      </div>
+      <div class="badge">
+        <span class="num">★</span>
+        <span class="lab">Premium</span>
+      </div>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">12+</div><div class="stat-lab">Signature Blends</div></div>
+    <div class="stat"><div class="stat-num">50K+</div><div class="stat-lab">Happy Customers</div></div>
+    <div class="stat"><div class="stat-num">4.9★</div><div class="stat-lab">Average Rating</div></div>
+    <div class="stat"><div class="stat-num">8yr</div><div class="stat-lab">Of Excellence</div></div>
+  </div>
+  <footer>
+    <div class="logo">Sitara <span>Coffee</span></div>
+    <p>© 2026 Sitara Coffee, Kadiri. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MENU
+═══════════════════════════════════════ -->
+<div id="page-menu" class="page">
+  <div class="menu-header">
+    <h1>Our <em>Menu</em></h1>
+    <p>Handcrafted beverages and bites — tap + to add to your cart</p>
+    <div class="menu-tabs">
+      <button class="tab-btn active" onclick="filterMenu('all', this)">All</button>
+      <button class="tab-btn" onclick="filterMenu('hot', this)">Hot Drinks</button>
+      <button class="tab-btn" onclick="filterMenu('cold', this)">Cold Drinks</button>
+      <button class="tab-btn" onclick="filterMenu('food', this)">Food</button>
+    </div>
+  </div>
+  <div class="menu-grid" id="menu-grid"></div>
+  <footer>
+    <div class="logo">Sitara <span>Coffee</span></div>
+    <p>© 2026 Sitara Coffee, Kadiri. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ORDER + PAYMENT
+═══════════════════════════════════════ -->
+<div id="page-order" class="page">
+  <div class="order-container">
+
+    <!-- LEFT: Form -->
+    <div class="order-form-section">
+      <h2>Checkout</h2>
+      <p>Review your cart, fill in your details, and choose how to pay.</p>
+
+      <!-- Contact -->
+      <div class="section-label">Contact Details</div>
+      <div class="form-row">
+        <div class="field"><label>First Name</label><input type="text" placeholder="Priya" id="ord-fname"></div>
+        <div class="field"><label>Last Name</label><input type="text" placeholder="Sharma" id="ord-lname"></div>
+      </div>
+      <div class="field"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210" id="ord-phone"></div>
+      <div class="field">
+        <label>Email (optional)</label>
+        <input type="email" placeholder="you@example.com" id="ord-email">
+      </div>
+
+      <!-- Order Type -->
+      <div class="section-label">Order Type</div>
+      <div class="field">
+        <select id="ord-type">
+          <option>Dine In</option>
+          <option>Takeaway</option>
+          <option>Delivery</option>
+        </select>
+      </div>
+      <div class="field" id="addr-field" style="display:none">
+        <label>Delivery Address</label>
+        <textarea placeholder="House no, Street, Area, City..." id="ord-addr"></textarea>
+      </div>
+      <div class="field">
+        <label>Special Instructions</label>
+        <textarea placeholder="Any allergies, preferences, or notes..." id="ord-note"></textarea>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="section-label">Payment Method</div>
+      <div class="payment-methods">
+
+        <!-- Card -->
+        <div class="payment-option">
+          <input type="radio" name="payment" id="pay-card" value="card">
+          <label class="payment-label" for="pay-card">
+            <span class="payment-icon">💳</span>
+            <span class="payment-name">Card</span>
+            <span class="payment-sub">Debit / Credit</span>
+          </label>
+        </div>
+
+        <!-- UPI -->
+        <div class="payment-option">
+          <input type="radio" name="payment" id="pay-upi" value="upi">
+          <label class="payment-label" for="pay-upi">
+            <span class="payment-icon">📱</span>
+            <span class="payment-name">UPI</span>
+            <span class="payment-sub">GPay, PhonePe…</span>
+          </label>
+        </div>
+
+        <!-- Net Banking -->
+        <div class="payment-option">
+          <input type="radio" name="payment" id="pay-net" value="netbanking">
+          <label class="payment-label" for="pay-net">
+            <span class="payment-icon">🏦</span>
+            <span class="payment-name">Net Bank</span>
+            <span class="payment-sub">Online transfer</span>
+          </label>
+        </div>
+
+        <!-- Cash on Delivery -->
+        <div class="payment-option">
+          <input type="radio" name="payment" id="pay-cod" value="cod">
+          <label class="payment-label" for="pay-cod">
+            <span class="payment-icon">💵</span>
+            <span class="payment-name">Cash</span>
+            <span class="payment-sub">Pay at counter</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Card Details (shown when card selected) -->
+      <div class="card-details" id="card-details">
+        <div class="field">
+          <label>Card Holder Name</label>
+          <input type="text" placeholder="Name on card" id="card-holder">
+        </div>
+        <div class="field card-number-wrap">
+          <label>Card Number</label>
+          <input type="text" placeholder="1234 5678 9012 3456" id="card-number" maxlength="19" oninput="formatCardNumber(this)">
+          <span class="card-type-icon" id="card-type-icon">💳</span>
+        </div>
+        <div class="card-row">
+          <div class="field"><label>Expiry</label><input type="text" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)"></div>
+          <div class="field"><label>CVV</label><input type="password" placeholder="•••" maxlength="3"></div>
+          <div class="field"><label>Zip / PIN</label><input type="text" placeholder="500001" maxlength="6"></div>
+        </div>
+      </div>
+
+      <!-- UPI Details (shown when UPI selected) -->
+      <div class="upi-details" id="upi-details">
+        <div class="field">
+          <label>UPI ID</label>
+          <input type="text" placeholder="yourname@upi" id="upi-id">
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:-8px;">Or pay directly with your app:</p>
+        <div class="upi-apps">
+          <div class="upi-app" onclick="selectUpiApp(this)">📱 GPay</div>
+          <div class="upi-app" onclick="selectUpiApp(this)">🟣 PhonePe</div>
+          <div class="upi-app" onclick="selectUpiApp(this)">🔵 Paytm</div>
+          <div class="upi-app" onclick="selectUpiApp(this)">🏦 BHIM</div>
+          <div class="upi-app" onclick="selectUpiApp(this)">🟠 Amazon Pay</div>
+        </div>
+      </div>
+
+      <!-- COD confirmation -->
+      <div class="cod-details" id="cod-details">
+        <p>✅ &nbsp; You'll pay <strong>₹<span id="cod-amount">0</span></strong> in cash when you collect / receive your order. Please keep exact change if possible.</p>
+      </div>
+
+    </div><!-- /order-form-section -->
+
+    <!-- RIGHT: Order Summary -->
+    <div class="order-summary-panel">
+      <div class="summary-title">☕ Order Summary</div>
+      <div id="order-summary-content">
+        <div class="summary-empty">
+          <div class="emoji">☕</div>
+          <p>Add items from the menu<br>to see your order here</p>
+          <a onclick="showPage('menu')" style="color:var(--gold);cursor:pointer;font-size:.82rem;">Browse Menu →</a>
+        </div>
+      </div>
+      <button class="confirm-order-btn" onclick="placeOrder()">Place Order →</button>
+    </div>
+
+  </div><!-- /order-container -->
+</div>
+
+<!-- ═══════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════ -->
+<div id="page-login" class="page">
+  <div class="login-layout">
+    <div class="login-panel">
+      <div class="login-box" id="login-form-box">
+        <h2>Welcome <em>Back</em></h2>
+        <p>Sign in to track your orders and enjoy member rewards.</p>
+        <button class="social-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 7.5V10.5H13.48C13.25 11.7 12.1 13.5 9 13.5C6.35 13.5 4.2 11.32 4.2 9C4.2 6.68 6.35 4.5 9 4.5C10.48 4.5 11.5 5.1 12.07 5.62L14.22 3.55C12.92 2.35 11.12 1.5 9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.32 16.5 16.2 13.5 16.2 9.15C16.2 8.58 16.14 8.16 16.05 7.5H9Z" fill="#4285F4"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider"><div class="divider-line"></div><span>or sign in with email</span><div class="divider-line"></div></div>
+        <div class="field"><label>Email Address</label><input type="email" placeholder="you@example.com"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+        <div style="text-align:right;margin-top:-10px;margin-bottom:20px;">
+          <a style="font-size:.82rem;color:var(--coffee);cursor:pointer;" onclick="showToast('Password reset link sent!')">Forgot password?</a>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:16px;" onclick="handleLogin()">Sign In →</button>
+        <div class="switch-link">Don't have an account? <a onclick="toggleAuth()">Create one</a></div>
+      </div>
+      <div class="login-box" id="signup-form-box" style="display:none">
+        <h2>Join <em>Sitara</em></h2>
+        <p>Create your account and unlock exclusive member benefits.</p>
+        <div class="form-row">
+          <div class="field"><label>First Name</label><input type="text" placeholder="Priya"></div>
+          <div class="field"><label>Last Name</label><input type="text" placeholder="Sharma"></div>
+        </div>
+        <div class="field"><label>Email Address</label><input type="email" placeholder="you@example.com"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="Create a strong password"></div>
+        <div class="field"><label>Confirm Password</label><input type="password" placeholder="Repeat your password"></div>
+        <button class="btn-primary" style="width:100%;padding:16px;" onclick="handleLogin()">Create Account →</button>
+        <div class="switch-link">Already have an account? <a onclick="toggleAuth()">Sign in</a></div>
+      </div>
+    </div>
+    <div class="login-visual">
+      <div class="login-cups">☕</div>
+      <div class="login-quote">"Life begins <em>after coffee</em>"</div>
+      <div class="quote-author">— Sitara Coffee Philosophy</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+<div id="page-about" class="page">
+  <div class="about-hero">
+    <div>
+      <h1>Born from a<br><em>Love of Coffee</em></h1>
+      <p>Sitara Coffee was founded in 2018 with a simple dream — to bring world-class specialty coffee to the heart of Kadiri. We source our beans from the finest estates across Coorg, Chikmagalur, and beyond.</p>
+      <p style="margin-top:16px;">Every cup we serve is a promise — of quality, warmth, and a moment that belongs just to you.</p>
+      <button class="btn-primary" style="margin-top:32px;" onclick="showPage('menu')">Explore Our Menu</button>
+    </div>
+    <div class="about-visual">
+      <div class="about-tile"><span class="emoji">🌱</span><h3>Ethically Sourced</h3><p>Direct trade with farmers who care</p></div>
+      <div class="about-tile"><span class="emoji">🔥</span><h3>Artisan Roasted</h3><p>Small-batch roasting for peak flavour</p></div>
+      <div class="about-tile"><span class="emoji">☕</span><h3>Expert Brewed</h3><p>Trained baristas, every single time</p></div>
+      <div class="about-tile"><span class="emoji">💛</span><h3>Community First</h3><p>Kadiri's gathering place since 2018</p></div>
+    </div>
+  </div>
+  <div class="values-section">
+    <h2>Our <em>Values</em></h2>
+    <div class="values-grid">
+      <div class="value-card"><h3>Quality Without Compromise</h3><p>From bean selection to cup presentation, we never cut corners. Our standards are high because your expectations deserve nothing less.</p></div>
+      <div class="value-card"><h3>Sustainability at Heart</h3><p>We partner with eco-conscious farms and use compostable packaging. Because a great cup of coffee shouldn't cost the planet.</p></div>
+      <div class="value-card"><h3>Warmth in Every Cup</h3><p>Coffee is more than a drink — it's a connection. We strive to make Sitara a place where everyone feels welcome and at home.</p></div>
+    </div>
+  </div>
+  <footer>
+    <div class="logo">Sitara <span>Coffee</span></div>
+    <p>© 2026 Sitara Coffee, Kadiri. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════
+     THANK YOU
+═══════════════════════════════════════ -->
+<div id="page-thankyou" class="page">
+  <div class="thankyou-page">
+    <div class="confetti" id="confetti-container"></div>
+    <div class="ty-icon">☕</div>
+    <div class="ty-star">★ &nbsp; Order Confirmed &nbsp; ★</div>
+    <h1 class="ty-title">Thank You,<br><em>Sitara Star!</em></h1>
+    <p class="ty-desc">Your order is brewing! We're crafting your perfect cup with love and care. You'll be notified when it's ready.</p>
+    <div class="ty-card">
+      <div class="ty-order-id">Order Number</div>
+      <div class="ty-order-num" id="ty-order-num">#SC-0000</div>
+      <div class="ty-payment-method" id="ty-payment-method">Paid via Cash on Delivery</div>
+      <div class="ty-eta">⏱ Estimated time: <strong style="color:var(--gold)">15–20 minutes</strong></div>
+    </div>
+    <div class="ty-actions">
+      <button class="btn-primary" onclick="showPage('home')">Back to Home</button>
+      <button class="btn-ghost" onclick="showPage('menu')" style="color:var(--cream);border-color:rgba(245,239,224,.2);">Order Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/menu-data.js"></script>
+<script src="js/app.js"></script>
+<!-- Keep cod-amount in sync -->
+<script>
+  setInterval(() => {
+    const el = document.getElementById('cod-amount');
+    if (el) el.textContent = (typeof getCartTotals === 'function') ? getCartTotals().total : 0;
+  }, 500);
+</script>
+</body>
+</html>

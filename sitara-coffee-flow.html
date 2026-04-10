@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sitara Coffee</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0F0A04;
+  --parchment: #F7F1E3;
+  --gold: #B8883A;
+  --gold-light: #D4A85A;
+  --gold-pale: #F0DEB8;
+  --espresso: #3B1F0A;
+  --roast: #6B3C1A;
+  --cream: #FAF6ED;
+  --muted: #8A7560;
+  --border: rgba(184,136,58,0.18);
+  --card-bg: #FFFFFF;
+  --shadow: 0 4px 32px rgba(15,10,4,0.10);
+  --shadow-lg: 0 16px 56px rgba(15,10,4,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════
+   SCREEN SYSTEM
+══════════════════════════════════ */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* ══════════════════════════════════
+   NAV
+══════════════════════════════════ */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 64px;
+  background: var(--ink);
+  position: sticky; top: 0; z-index: 300;
+}
+.brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.55rem; font-weight: 600;
+  color: var(--gold); letter-spacing: .04em; cursor: pointer;
+}
+.brand em { font-style: italic; color: var(--gold-light); }
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+
+.tb-btn {
+  background: transparent; border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.75); padding: 8px 18px; border-radius: 2px;
+  font-family: 'Jost', sans-serif; font-size: .8rem; letter-spacing:.1em;
+  text-transform: uppercase; cursor: pointer; transition: all .2s;
+}
+.tb-btn:hover { border-color: var(--gold); color: var(--gold); }
+.tb-btn.filled { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+.tb-btn.filled:hover { background: var(--gold-light); }
+
+.cart-btn {
+  position: relative; background: transparent;
+  border: 1px solid rgba(255,255,255,.18);
+  color: white; width: 42px; height: 42px; border-radius: 50%;
+  font-size: 1.1rem; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: all .2s;
+}
+.cart-btn:hover { border-color: var(--gold); color: var(--gold); }
+.cart-count {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--gold); color: var(--ink);
+  width: 18px; height: 18px; border-radius: 50%;
+  font-size: .6rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0);
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.cart-count.show { opacity: 1; transform: scale(1); }
+
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border: 1px solid rgba(255,255,255,.15);
+  border-radius: 99px; cursor: pointer;
+}
+.user-chip .avatar {
+  width: 26px; height: 26px; background: var(--gold);
+  border-radius: 50%; font-size: .75rem; font-weight: 700;
+  color: var(--ink); display: flex; align-items: center; justify-content: center;
+}
+.user-chip .name { color: rgba(255,255,255,.8); font-size: .82rem; }
+
+/* ══════════════════════════════════
+   PROGRESS STEPS (checkout flow)
+══════════════════════════════════ */
+.steps-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 20px 48px;
+  background: white; border-bottom: 1px solid var(--border);
+}
+.step {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 600; transition: all .3s;
+}
+.step.active { color: var(--gold); }
+.step.active .step-num { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.step.done { color: var(--roast); }
+.step.done .step-num { background: var(--roast); border-color: var(--roast); color: white; font-size: 0; }
+.step.done .step-num::after { content: '✓'; font-size: .72rem; }
+.step-line { width: 48px; height: 1px; background: var(--border); margin: 0 4px; }
+
+/* ══════════════════════════════════
+   AUTH SCREENS (Register / Login)
+══════════════════════════════════ */
+.auth-wrap {
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 64px);
+}
+.auth-visual {
+  background: var(--ink);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 64px; position: relative; overflow: hidden;
+}
+.auth-visual::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(184,136,58,.14) 0%, transparent 68%);
+}
+.auth-cup { font-size: 6rem; animation: floatY 3s ease-in-out infinite; margin-bottom: 40px; position: relative; z-index:1; }
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.auth-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.1rem; color: var(--parchment); text-align: center;
+  line-height: 1.35; position: relative; z-index:1;
+}
+.auth-tagline em { color: var(--gold); font-style: italic; }
+.auth-sub { color: var(--muted); font-size: .88rem; text-align: center; margin-top: 14px; position: relative; z-index:1; line-height: 1.6; }
+.auth-perks { margin-top: 36px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index:1; width: 100%; max-width: 280px; }
+.perk {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px 16px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(184,136,58,.15); border-radius: 4px;
+}
+.perk-icon { font-size: 1.3rem; }
+.perk-text { font-size: .82rem; color: rgba(255,255,255,.65); }
+
+.auth-panel {
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; padding: 60px 72px;
+  background: var(--cream);
+}
+.auth-form { width: 100%; max-width: 400px; }
+.auth-form h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem; font-weight: 700; margin-bottom: 6px;
+}
+.auth-form h2 em { font-style: italic; color: var(--gold); }
+.auth-form .subtitle { color: var(--muted); font-size: .88rem; margin-bottom: 36px; line-height: 1.5; }
+
+.input-group { margin-bottom: 18px; }
+.input-group label {
+  display: block; font-size: .72rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
+}
+.input-group input {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid rgba(107,60,26,.14);
+  border-radius: 3px; background: white;
+  font-family: 'Jost', sans-serif; font-size: .95rem;
+  color: var(--ink); outline: none; transition: border-color .2s;
+}
+.input-group input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,136,58,.1); }
+.input-group input.error { border-color: #C0392B; }
+.err-msg { color: #C0392B; font-size: .75rem; margin-top: 4px; display: none; }
+.err-msg.show { display: block; }
+
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 44px; }
+.pw-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: .85rem;
+}
+
+.strength-bar { display: flex; gap: 4px; margin-top: 6px; }
+.strength-seg { flex: 1; height: 3px; background: rgba(107,60,26,.1); border-radius: 99px; transition: background .3s; }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:rgba(107,60,26,.12); }
+.divider span { font-size: .75rem; color: var(--muted); }
+
+.google-btn {
+  width: 100%; padding: 12px; border: 1.5px solid rgba(107,60,26,.14);
+  background: white; border-radius: 3px;
+  font-family: 'Jost', sans-serif; font-size: .9rem;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 10px; transition: all .2s; margin-bottom: 4px;
+}
+.google-btn:hover { border-color: var(--gold); background: rgba(184,136,58,.03); }
+
+.submit-btn {
+  width: 100%; padding: 15px; background: var(--gold); color: var(--ink);
+  border: none; border-radius: 3px;
+  font-family: 'Jost', sans-serif; font-weight: 600;
+  font-size: .95rem; letter-spacing: .06em; cursor: pointer;
+  transition: all .2s; margin-top: 4px;
+}
+.submit-btn:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(184,136,58,.3); }
+
+.auth-switch { color: var(--muted); font-size: .84rem; text-align: center; margin-top: 22px; }
+.auth-switch a { color: var(--roast); font-weight: 500; cursor: pointer; }
+.auth-switch a:hover { color: var(--gold); }
+
+.terms { font-size: .74rem; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.5; }
+.terms a { color: var(--gold); cursor: pointer; }
+
+/* ══════════════════════════════════
+   MENU SCREEN
+══════════════════════════════════ */
+.menu-hero {
+  background: var(--ink); padding: 52px 64px 44px;
+  position: relative; overflow: hidden;
+}
+.menu-hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.menu-hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem,4vw,3.8rem); color: var(--parchment); line-height: 1.1;
+}
+.menu-hero h1 em { font-style: italic; color: var(--gold); }
+.menu-hero p { color: var(--muted); margin-top: 10px; font-size: .9rem; }
+.menu-filters {
+  display: flex; gap: 8px; margin-top: 28px; flex-wrap: wrap;
+}
+.filter-pill {
+  padding: 8px 22px; border-radius: 99px; border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.65); font-family: 'Jost', sans-serif;
+  font-size: .8rem; letter-spacing: .08em; cursor: pointer; transition: all .2s;
+  background: transparent;
+}
+.filter-pill.on { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+.filter-pill:hover:not(.on) { border-color: var(--gold); color: var(--gold); }
+
+.menu-body { flex: 1; display: grid; grid-template-columns: 1fr 320px; }
+.menu-grid-wrap { padding: 36px 48px; background: var(--cream); }
+.menu-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
+}
+
+.food-card {
+  background: white; border-radius: 6px; overflow: hidden;
+  box-shadow: var(--shadow); transition: transform .22s, box-shadow .22s;
+  cursor: pointer;
+}
+.food-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+.food-card-img {
+  height: 160px; display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; position: relative;
+}
+.food-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: var(--gold); color: var(--ink);
+  font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+  padding: 3px 9px; border-radius: 99px; text-transform: uppercase;
+}
+.food-card-body { padding: 16px 18px; }
+.food-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+.food-desc { font-size: .78rem; color: var(--muted); line-height: 1.55; margin-bottom: 14px; }
+.food-footer { display: flex; align-items: center; justify-content: space-between; }
+.food-price { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 700; color: var(--roast); }
+.add-btn {
+  width: 33px; height: 33px; border-radius: 50%;
+  background: var(--ink); color: white; border: none;
+  font-size: 1.1rem; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: all .2s;
+}
+.add-btn:hover { background: var(--gold); color: var(--ink); transform: scale(1.1); }
+.add-btn.added { background: #2D7A4F; font-size: .75rem; }
+
+/* Mini Cart Sidebar on Menu */
+.menu-cart {
+  background: var(--ink); padding: 32px 28px;
+  display: flex; flex-direction: column;
+  position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+  border-left: 1px solid rgba(255,255,255,.06);
+}
+.mc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem; color: var(--parchment); margin-bottom: 24px;
+  padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.mc-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; color: var(--muted); text-align: center;
+}
+.mc-empty .icon { font-size: 3rem; opacity: .25; }
+.mc-empty p { font-size: .84rem; }
+.mc-items { flex: 1; overflow-y: auto; }
+.mc-items::-webkit-scrollbar { width: 3px; }
+.mc-items::-webkit-scrollbar-thumb { background: rgba(184,136,58,.3); border-radius:99px; }
+
+.mc-item {
+  display: flex; gap: 10px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  animation: slideR .25s ease;
+}
+@keyframes slideR { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
+.mc-item-emoji { font-size: 1.4rem; width: 36px; text-align: center; }
+.mc-item-name { color: var(--parchment); font-size: .85rem; flex: 1; }
+.mc-item-price { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: .95rem; }
+.mc-qty { display: flex; align-items: center; gap: 8px; }
+.mc-qty-btn {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255,255,255,.08); border: none;
+  color: white; font-size: .85rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background .15s;
+}
+.mc-qty-btn:hover { background: var(--gold); color: var(--ink); }
+.mc-qty-num { color: white; font-size: .82rem; min-width: 16px; text-align: center; }
+
+.mc-footer { padding-top: 18px; border-top: 1px solid rgba(255,255,255,.08); margin-top: 4px; }
+.mc-row { display: flex; justify-content: space-between; color: var(--muted); font-size: .8rem; margin-bottom: 6px; }
+.mc-total { display: flex; justify-content: space-between; color: var(--parchment); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-bottom: 16px; margin-top: 8px; }
+.mc-total span:last-child { color: var(--gold); }
+.checkout-now-btn {
+  width: 100%; padding: 14px; background: var(--gold); color: var(--ink);
+  border: none; border-radius: 3px;
+  font-family: 'Jost', sans-serif; font-weight: 600;
+  font-size: .9rem; letter-spacing: .06em; cursor: pointer; transition: all .2s;
+}
+.checkout-now-btn:hover { background: var(--gold-light); }
+.checkout-now-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ══════════════════════════════════
+   CART SCREEN
+══════════════════════════════════ */
+.cart-screen-body {
+  flex: 1; display: grid; grid-template-columns: 1fr 380px;
+  padding: 48px; gap: 32px; align-items: start;
+  background: var(--cream); max-width: 1200px; margin: 0 auto; width: 100%;
+}
+.cart-screen-body h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem; margin-bottom: 28px; grid-column: 1/-1;
+}
+.cart-screen-body h2 em { font-style: italic; color: var(--gold); }
+
+.cart-list { display: flex; flex-direction: column; gap: 14px; }
+.cart-row-item {
+  display: flex; gap: 16px; align-items: center;
+  background: white; padding: 18px 20px; border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+.cri-emoji { font-size: 2.2rem; width: 56px; text-align: center; }
+.cri-info { flex: 1; }
+.cri-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; }
+.cri-tag { font-size: .72rem; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
+.cri-unit-price { font-size: .82rem; color: var(--muted); margin-top: 4px; }
+.cri-controls { display: flex; align-items: center; gap: 12px; }
+.c-qty-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--cream); border: 1px solid var(--border);
+  font-size: 1rem; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: all .2s;
+}
+.c-qty-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.c-qty-num { font-size: .95rem; min-width: 22px; text-align: center; font-weight: 500; }
+.cri-price { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 700; color: var(--roast); min-width: 64px; text-align: right; }
+.cri-remove {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: .75rem; letter-spacing: .05em;
+  transition: color .2s; padding: 4px;
+}
+.cri-remove:hover { color: #C0392B; }
+
+.cart-empty-state {
+  text-align: center; padding: 80px 40px; color: var(--muted); grid-column: 1/-1;
+}
+.cart-empty-state .big-emoji { font-size: 5rem; opacity: .2; margin-bottom: 20px; }
+.cart-empty-state p { font-size: 1rem; margin-bottom: 24px; }
+
+/* Order Summary Card */
+.order-card {
+  background: white; border-radius: 8px;
+  padding: 28px 24px; box-shadow: var(--shadow);
+  position: sticky; top: 80px;
+}
+.order-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; margin-bottom: 22px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--border);
+}
+.order-line { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: 9px; }
+.order-divider { height: 1px; background: var(--border); margin: 14px 0; }
+.order-total { display: flex; justify-content: space-between; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; }
+.order-total span:last-child { color: var(--gold); }
+.promo-wrap { display: flex; gap: 8px; margin: 18px 0; }
+.promo-wrap input {
+  flex: 1; padding: 10px 12px; border: 1.5px solid var(--border);
+  border-radius: 3px; font-family: 'Jost', sans-serif; font-size: .85rem;
+  outline: none; transition: border-color .2s;
+}
+.promo-wrap input:focus { border-color: var(--gold); }
+.promo-btn {
+  padding: 10px 16px; background: var(--ink); color: white;
+  border: none; border-radius: 3px; font-size: .8rem; cursor: pointer;
+  transition: background .2s; white-space: nowrap;
+}
+.promo-btn:hover { background: var(--roast); }
+.promo-msg { font-size: .75rem; margin-top: -10px; margin-bottom: 10px; }
+.promo-msg.ok { color: #2D7A4F; }
+.promo-msg.err { color: #C0392B; }
+.proceed-btn {
+  width: 100%; padding: 15px; background: var(--gold); color: var(--ink);
+  border: none; border-radius: 3px; margin-top: 16px;
+  font-family: 'Jost', sans-serif; font-weight: 600;
+  font-size: .95rem; letter-spacing: .06em; cursor: pointer; transition: all .2s;
+}
+.proceed-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+.proceed-btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+.back-link {
+  display: block; text-align: center; margin-top: 14px;
+  color: var(--muted); font-size: .82rem; cursor: pointer;
+  transition: color .2s;
+}
+.back-link:hover { color: var(--gold); }
+
+/* ══════════════════════════════════
+   CHECKOUT SCREEN
+══════════════════════════════════ */
+.checkout-body {
+  flex: 1; display: grid; grid-template-columns: 1fr 380px;
+  padding: 48px; gap: 32px; align-items: start;
+  background: var(--cream); max-width: 1200px; margin: 0 auto; width: 100%;
+}
+
+.checkout-form h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.1rem; margin-bottom: 6px;
+}
+.checkout-form h2 em { font-style: italic; color: var(--gold); }
+.checkout-form .sub { color: var(--muted); font-size: .88rem; margin-bottom: 32px; }
+
+.sec-head {
+  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gold); margin: 28px 0 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Payment cards */
+.pay-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }
+.pay-opt { position: relative; }
+.pay-opt input { position: absolute; opacity: 0; }
+.pay-lbl {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 16px 10px; border: 1.5px solid var(--border);
+  border-radius: 6px; cursor: pointer; transition: all .2s;
+  background: white; text-align: center;
+}
+.pay-lbl:hover { border-color: var(--gold); }
+.pay-opt input:checked + .pay-lbl {
+  border-color: var(--gold); background: rgba(184,136,58,.06);
+  box-shadow: 0 0 0 3px rgba(184,136,58,.12);
+}
+.pay-icon { font-size: 1.6rem; }
+.pay-name { font-size: .75rem; font-weight: 600; color: var(--ink); }
+.pay-sub { font-size: .65rem; color: var(--muted); }
+
+/* Expandable panels */
+.pay-panel {
+  display: none; background: rgba(184,136,58,.04);
+  border: 1px solid rgba(184,136,58,.2); border-radius: 6px;
+  padding: 20px; margin-top: 10px; margin-bottom: 6px;
+}
+.pay-panel.show { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.card-num-wrap { position: relative; }
+.card-num-wrap input { padding-right: 52px; letter-spacing: .1em; }
+.card-brand { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; pointer-events: none; }
+.card-row3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+
+.upi-apps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.upi-app-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 14px; border: 1px solid var(--border);
+  border-radius: 4px; background: white; cursor: pointer;
+  font-size: .8rem; font-family: 'Jost', sans-serif;
+  transition: all .2s;
+}
+.upi-app-btn:hover,.upi-app-btn.sel { border-color: var(--gold); background: rgba(184,136,58,.06); color: var(--roast); font-weight: 500; }
+.cod-note {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; background: rgba(45,122,79,.07);
+  border: 1px solid rgba(45,122,79,.2); border-radius: 4px;
+  color: #2D7A4F; font-size: .86rem;
+}
+
+/* Address toggle */
+.addr-row { display: none; }
+.addr-row.show { display: block; }
+
+/* Order summary (checkout sidebar) */
+.co-order-card {
+  background: white; border-radius: 8px;
+  padding: 24px; box-shadow: var(--shadow);
+  position: sticky; top: 80px;
+}
+.co-order-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.co-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
+.co-item-l { display: flex; gap: 8px; align-items: center; }
+.co-item-emoji { font-size: 1.2rem; }
+.co-item-name { font-size: .84rem; }
+.co-item-qty { font-size: .72rem; color: var(--muted); }
+.co-item-price { font-family: 'Cormorant Garamond', serif; font-size: .95rem; color: var(--gold); font-weight: 600; white-space: nowrap; }
+.co-divider { height: 1px; background: var(--border); margin: 14px 0; }
+.co-line { display: flex; justify-content: space-between; font-size: .82rem; color: var(--muted); margin-bottom: 7px; }
+.co-total { display: flex; justify-content: space-between; font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 700; margin-top: 8px; }
+.co-total span:last-child { color: var(--gold); }
+.co-discount { color: #2D7A4F; font-size: .8rem; }
+.place-btn {
+  width: 100%; padding: 16px; background: var(--gold); color: var(--ink);
+  border: none; border-radius: 3px; margin-top: 20px;
+  font-family: 'Jost', sans-serif; font-weight: 600;
+  font-size: 1rem; letter-spacing: .06em; cursor: pointer; transition: all .2s;
+}
+.place-btn:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(184,136,58,.3); }
+.secure-note {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; font-size: .72rem; color: var(--muted); margin-top: 12px;
+}
+
+/* ══════════════════════════════════
+   THANK YOU SCREEN
+══════════════════════════════════ */
+.ty-page {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--ink); padding: 80px 40px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.ty-page::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(184,136,58,.12) 0%, transparent 62%);
+}
+.ty-confetti { position: absolute; inset: 0; pointer-events: none; }
+.ty-confetti-dot { position: absolute; border-radius: 50%; animation: fall linear infinite; }
+@keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+.ty-check {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(45,122,79,.15); border: 2px solid rgba(45,122,79,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; margin-bottom: 28px;
+  position: relative; z-index: 1;
+  animation: popIn .6s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+.ty-kicker { font-size: .72rem; letter-spacing: .35em; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; position: relative; z-index:1; }
+.ty-h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem,5vw,4rem); color: var(--parchment);
+  line-height: 1.1; margin-bottom: 14px; position: relative; z-index:1;
+}
+.ty-h1 em { font-style: italic; color: var(--gold); }
+.ty-desc { color: var(--muted); font-size: .95rem; line-height: 1.75; max-width: 480px; margin-bottom: 44px; position: relative; z-index:1; }
+
+.ty-receipt {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(184,136,58,.2);
+  border-radius: 8px; padding: 28px 44px; margin-bottom: 44px;
+  position: relative; z-index:1;
+  min-width: 340px;
+}
+.ty-receipt::before {
+  content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 20px; background: var(--ink);
+  border-radius: 50%;
+}
+.ty-receipt::after {
+  content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 20px; background: var(--ink);
+  border-radius: 50%;
+}
+.ty-label { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.ty-value { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--gold); margin-bottom: 12px; }
+.ty-divider { height: 1px; border: none; border-top: 1px dashed rgba(255,255,255,.1); margin: 14px 0; }
+.ty-meta { display: flex; justify-content: space-between; gap: 24px; }
+.ty-meta-item { text-align: center; }
+.ty-meta-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.ty-meta-val { color: var(--parchment); font-size: .9rem; font-weight: 500; }
+.ty-meta-val.gold { color: var(--gold); }
+
+.ty-actions { display: flex; gap: 14px; position: relative; z-index:1; }
+.ty-actions .btn-primary {
+  background: var(--gold); color: var(--ink); border: none; padding: 14px 32px;
+  border-radius: 3px; font-family: 'Jost', sans-serif; font-weight: 600;
+  font-size: .9rem; letter-spacing: .06em; cursor: pointer; transition: all .2s;
+}
+.ty-actions .btn-primary:hover { background: var(--gold-light); }
+.ty-actions .btn-outline {
+  background: transparent; color: rgba(255,255,255,.7);
+  border: 1px solid rgba(255,255,255,.2); padding: 14px 32px;
+  border-radius: 3px; font-family: 'Jost', sans-serif;
+  font-size: .9rem; cursor: pointer; transition: all .2s;
+}
+.ty-actions .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ══════════════════════════════════
+   UTILITIES
+══════════════════════════════════ */
+.toast-container { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--ink); color: var(--parchment);
+  padding: 13px 20px; border-radius: 4px;
+  border-left: 3px solid var(--gold); font-size: .88rem;
+  box-shadow: 0 8px 28px rgba(0,0,0,.3);
+  animation: toastIn .3s ease;
+}
+.toast.bye { animation: toastOut .3s ease forwards; }
+@keyframes toastIn { from{transform:translateX(80px);opacity:0} to{transform:none;opacity:1} }
+@keyframes toastOut { to{transform:translateX(80px);opacity:0} }
+.toast.green { border-left-color: #2D7A4F; }
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed; inset: 0; background: rgba(15,10,4,.85);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9000; display: none;
+}
+.loading-overlay.show { display: flex; }
+.loading-cup { font-size: 3.5rem; animation: loadPulse 1s ease-in-out infinite; }
+@keyframes loadPulse { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.15);opacity:1} }
+.loading-text { color: var(--gold); font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; margin-top: 16px; }
+
+@media (max-width: 900px) {
+  .auth-wrap { grid-template-columns: 1fr; }
+  .auth-visual { display: none; }
+  .auth-panel { padding: 48px 28px; }
+  .topbar { padding: 0 20px; }
+  .menu-body { grid-template-columns: 1fr; }
+  .menu-cart { display: none; }
+  .menu-grid-wrap { padding: 24px; }
+  .cart-screen-body,.checkout-body { grid-template-columns: 1fr; padding: 28px 20px; }
+  .order-card,.co-order-card { position: static; }
+  .pay-grid { grid-template-columns: 1fr 1fr; }
+  .card-row3 { grid-template-columns: 1fr 1fr; }
+  .ty-receipt { min-width: auto; padding: 24px 24px; }
+  .menu-hero { padding: 40px 24px 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOADING ══════════════ -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-cup">☕</div>
+  <div class="loading-text">Brewing…</div>
+</div>
+
+<!-- ══════════════ TOASTS ══════════════ -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 1: REGISTER
+════════════════════════════════════════ -->
+<div class="screen active" id="s-register">
+  <nav class="topbar">
+    <div class="brand" onclick="goTo('s-register')">Sitara <em>Coffee</em></div>
+    <div class="topbar-right">
+      <span style="color:rgba(255,255,255,.45);font-size:.82rem;">Already a member?</span>
+      <button class="tb-btn filled" onclick="goTo('s-login')">Sign In</button>
+    </div>
+  </nav>
+  <div class="auth-wrap">
+    <div class="auth-visual">
+      <div class="auth-cup">☕</div>
+      <div class="auth-tagline">Your journey to<br>the <em>perfect cup</em><br>starts here</div>
+      <div class="auth-sub">Join thousands of coffee lovers<br>who trust Sitara Coffee every day</div>
+      <div class="auth-perks">
+        <div class="perk"><div class="perk-icon">🎁</div><div class="perk-text">Free drink on your first order</div></div>
+        <div class="perk"><div class="perk-icon">⭐</div><div class="perk-text">Earn loyalty stars with every order</div></div>
+        <div class="perk"><div class="perk-icon">🚀</div><div class="perk-text">Priority brewing for members</div></div>
+      </div>
+    </div>
+    <div class="auth-panel">
+      <div class="auth-form">
+        <h2>Create your<br><em>Account</em></h2>
+        <p class="subtitle">It only takes a minute. No spam, ever.</p>
+
+        <button class="google-btn" onclick="handleGoogleAuth()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 7.5V10.5H13.48C13.25 11.7 12.1 13.5 9 13.5C6.35 13.5 4.2 11.32 4.2 9C4.2 6.68 6.35 4.5 9 4.5C10.48 4.5 11.5 5.1 12.07 5.62L14.22 3.55C12.92 2.35 11.12 1.5 9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.32 16.5 16.2 13.5 16.2 9.15C16.2 8.58 16.14 8.16 16.05 7.5H9Z" fill="#4285F4"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider"><span>or register with email</span></div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>First Name</label>
+            <input type="text" id="reg-fname" placeholder="Priya" oninput="clearErr(this)">
+            <div class="err-msg" id="err-fname">Required</div>
+          </div>
+          <div class="input-group">
+            <label>Last Name</label>
+            <input type="text" id="reg-lname" placeholder="Sharma" oninput="clearErr(this)">
+            <div class="err-msg" id="err-lname">Required</div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="reg-email" placeholder="priya@example.com" oninput="clearErr(this)">
+          <div class="err-msg" id="err-email">Enter a valid email</div>
+        </div>
+
+        <div class="input-group">
+          <label>Phone Number</label>
+          <input type="tel" id="reg-phone" placeholder="+91 98765 43210" oninput="clearErr(this)">
+          <div class="err-msg" id="err-phone">Enter a valid number</div>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="reg-pw" placeholder="Create a strong password" oninput="checkStrength(this.value); clearErr(this)">
+            <button class="pw-toggle" type="button" onclick="togglePw('reg-pw',this)">👁</button>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-seg" id="str1"></div>
+            <div class="strength-seg" id="str2"></div>
+            <div class="strength-seg" id="str3"></div>
+            <div class="strength-seg" id="str4"></div>
+          </div>
+          <div class="err-msg" id="err-pw">Min 6 characters</div>
+        </div>
+
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="reg-pw2" placeholder="Repeat password" oninput="clearErr(this)">
+            <button class="pw-toggle" type="button" onclick="togglePw('reg-pw2',this)">👁</button>
+          </div>
+          <div class="err-msg" id="err-pw2">Passwords do not match</div>
+        </div>
+
+        <button class="submit-btn" onclick="doRegister()">Create Account →</button>
+        <div class="auth-switch">Already have an account? <a onclick="goTo('s-login')">Sign in here</a></div>
+        <p class="terms">By registering you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 2: LOGIN
+════════════════════════════════════════ -->
+<div class="screen" id="s-login">
+  <nav class="topbar">
+    <div class="brand" onclick="goTo('s-register')">Sitara <em>Coffee</em></div>
+    <div class="topbar-right">
+      <span style="color:rgba(255,255,255,.45);font-size:.82rem;">New here?</span>
+      <button class="tb-btn filled" onclick="goTo('s-register')">Register</button>
+    </div>
+  </nav>
+  <div class="auth-wrap">
+    <div class="auth-visual">
+      <div class="auth-cup">☕</div>
+      <div class="auth-tagline">"Life begins <em>after coffee</em>"</div>
+      <div class="auth-sub">Welcome back. Your perfect brew<br>is waiting for you.</div>
+      <div class="auth-perks">
+        <div class="perk"><div class="perk-icon">📦</div><div class="perk-text">Track your orders in real-time</div></div>
+        <div class="perk"><div class="perk-icon">💳</div><div class="perk-text">Saved addresses & payment methods</div></div>
+        <div class="perk"><div class="perk-icon">🏆</div><div class="perk-text">View your loyalty rewards</div></div>
+      </div>
+    </div>
+    <div class="auth-panel">
+      <div class="auth-form">
+        <h2>Welcome<br><em>Back</em></h2>
+        <p class="subtitle">Sign in to continue to your account.</p>
+
+        <button class="google-btn" onclick="handleGoogleAuth()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 7.5V10.5H13.48C13.25 11.7 12.1 13.5 9 13.5C6.35 13.5 4.2 11.32 4.2 9C4.2 6.68 6.35 4.5 9 4.5C10.48 4.5 11.5 5.1 12.07 5.62L14.22 3.55C12.92 2.35 11.12 1.5 9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.32 16.5 16.2 13.5 16.2 9.15C16.2 8.58 16.14 8.16 16.05 7.5H9Z" fill="#4285F4"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider"><span>or sign in with email</span></div>
+
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" placeholder="priya@example.com" oninput="clearErr(this)">
+          <div class="err-msg" id="err-lemail">Enter your email</div>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="login-pw" placeholder="••••••••" oninput="clearErr(this)">
+            <button class="pw-toggle" type="button" onclick="togglePw('login-pw',this)">👁</button>
+          </div>
+          <div class="err-msg" id="err-lpw">Enter your password</div>
+        </div>
+
+        <div style="text-align:right; margin-top:-10px; margin-bottom:18px;">
+          <a style="font-size:.8rem; color:var(--roast); cursor:pointer;" onclick="showToast('Reset link sent to your email!','green')">Forgot password?</a>
+        </div>
+
+        <button class="submit-btn" onclick="doLogin()">Sign In →</button>
+        <div class="auth-switch">Don't have an account? <a onclick="goTo('s-register')">Create one free</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 3: MENU
+════════════════════════════════════════ -->
+<div class="screen" id="s-menu">
+  <nav class="topbar">
+    <div class="brand">Sitara <em>Coffee</em></div>
+    <div class="topbar-right">
+      <div class="user-chip" id="user-chip">
+        <div class="avatar" id="user-avatar">P</div>
+        <span class="name" id="user-name-chip">Priya</span>
+      </div>
+      <button class="cart-btn" onclick="goTo('s-cart')">
+        🛒
+        <div class="cart-count" id="cart-count">0</div>
+      </button>
+    </div>
+  </nav>
+
+  <div class="menu-hero">
+    <h1>Our <em>Menu</em></h1>
+    <p>Add items to your cart — brewed fresh every time</p>
+    <div class="menu-filters">
+      <button class="filter-pill on" onclick="filterMenu('all',this)">All Items</button>
+      <button class="filter-pill" onclick="filterMenu('hot',this)">Hot Drinks ☕</button>
+      <button class="filter-pill" onclick="filterMenu('cold',this)">Cold Drinks 🧊</button>
+      <button class="filter-pill" onclick="filterMenu('food',this)">Food 🍽</button>
+    </div>
+  </div>
+
+  <div class="menu-body">
+    <div class="menu-grid-wrap">
+      <div class="menu-grid" id="menu-grid"></div>
+    </div>
+    <!-- Mini Cart Sidebar -->
+    <div class="menu-cart">
+      <div class="mc-title">Your Cart</div>
+      <div id="mc-empty" class="mc-empty">
+        <div class="icon">🛒</div>
+        <p>Nothing here yet.<br>Add some items!</p>
+      </div>
+      <div class="mc-items" id="mc-items" style="display:none"></div>
+      <div class="mc-footer" id="mc-footer" style="display:none">
+        <div class="mc-row"><span>Subtotal</span><span id="mc-sub">₹0</span></div>
+        <div class="mc-row"><span>Tax (5%)</span><span id="mc-tax">₹0</span></div>
+        <div class="mc-total"><span>Total</span><span id="mc-total">₹0</span></div>
+        <button class="checkout-now-btn" onclick="goTo('s-cart')">View Cart &amp; Checkout →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 4: CART
+════════════════════════════════════════ -->
+<div class="screen" id="s-cart">
+  <nav class="topbar">
+    <div class="brand">Sitara <em>Coffee</em></div>
+    <div class="topbar-right">
+      <button class="tb-btn" onclick="goTo('s-menu')">← Back to Menu</button>
+      <div class="user-chip">
+        <div class="avatar" id="cart-avatar">P</div>
+        <span class="name" id="cart-name-chip">Priya</span>
+      </div>
+    </div>
+  </nav>
+
+  <div style="background:white; border-bottom:1px solid var(--border); padding: 16px 48px; display:flex; gap:0; align-items:center; justify-content:center;">
+    <div class="step done" id="step-menu"><div class="step-num">1</div>&nbsp;Menu</div>
+    <div class="step-line"></div>
+    <div class="step active" id="step-cart"><div class="step-num">2</div>&nbsp;Cart</div>
+    <div class="step-line"></div>
+    <div class="step" id="step-checkout"><div class="step-num">3</div>&nbsp;Checkout</div>
+    <div class="step-line"></div>
+    <div class="step" id="step-confirm"><div class="step-num">4</div>&nbsp;Confirm</div>
+  </div>
+
+  <div style="flex:1; background:var(--cream); padding:48px; max-width:1200px; margin:0 auto; width:100%; display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:start;">
+    <div>
+      <h2 style="font-family:'Cormorant Garamond',serif; font-size:2rem; margin-bottom:24px;">
+        Your <em style="font-style:italic;color:var(--gold)">Cart</em>
+      </h2>
+      <div class="cart-list" id="cart-list-items"></div>
+    </div>
+    <div class="order-card">
+      <h3>Order Summary</h3>
+      <div id="co-lines"></div>
+      <div class="order-divider"></div>
+      <div class="order-line"><span>Subtotal</span><span id="co-sub">₹0</span></div>
+      <div class="order-line"><span>Tax (5%)</span><span id="co-tax">₹0</span></div>
+      <div class="order-line"><span>Packaging</span><span id="co-pack">₹10</span></div>
+      <div class="order-line co-discount" id="co-discount-row" style="display:none"><span>Promo Applied 🎉</span><span id="co-discount-val"></span></div>
+      <div class="order-divider"></div>
+      <div class="order-total"><span>Total</span><span id="co-total">₹0</span></div>
+      <div class="promo-wrap">
+        <input type="text" id="promo-input" placeholder="Enter promo code" style="text-transform:uppercase;">
+        <button class="promo-btn" onclick="applyPromo()">Apply</button>
+      </div>
+      <div class="promo-msg" id="promo-msg"></div>
+      <button class="proceed-btn" id="proceed-checkout-btn" onclick="goTo('s-checkout')" disabled>Proceed to Checkout →</button>
+      <a class="back-link" onclick="goTo('s-menu')">← Continue Shopping</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 5: CHECKOUT
+════════════════════════════════════════ -->
+<div class="screen" id="s-checkout">
+  <nav class="topbar">
+    <div class="brand">Sitara <em>Coffee</em></div>
+    <div class="topbar-right">
+      <button class="tb-btn" onclick="goTo('s-cart')">← Back to Cart</button>
+      <div class="user-chip">
+        <div class="avatar" id="co-avatar">P</div>
+        <span class="name" id="co-name-chip">Priya</span>
+      </div>
+    </div>
+  </nav>
+
+  <div style="background:white; border-bottom:1px solid var(--border); padding:16px 48px; display:flex; gap:0; align-items:center; justify-content:center;">
+    <div class="step done"><div class="step-num">1</div>&nbsp;Menu</div>
+    <div class="step-line"></div>
+    <div class="step done"><div class="step-num">2</div>&nbsp;Cart</div>
+    <div class="step-line"></div>
+    <div class="step active"><div class="step-num">3</div>&nbsp;Checkout</div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-num">4</div>&nbsp;Confirm</div>
+  </div>
+
+  <div class="checkout-body">
+    <div class="checkout-form">
+      <h2>Checkout</h2>
+      <p class="sub">Almost there — fill in your details and pick a payment method.</p>
+
+      <div class="sec-head">Delivery Details</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>First Name</label>
+          <input type="text" id="co-fname" placeholder="Priya">
+        </div>
+        <div class="input-group">
+          <label>Last Name</label>
+          <input type="text" id="co-lname" placeholder="Sharma">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Phone</label>
+        <input type="tel" id="co-phone" placeholder="+91 98765 43210">
+        <div class="err-msg" id="err-co-phone">Enter your phone number</div>
+      </div>
+      <div class="input-group">
+        <label>Order Type</label>
+        <select id="co-type" onchange="toggleAddress()" style="width:100%;padding:13px 16px;border:1.5px solid rgba(107,60,26,.14);border-radius:3px;font-family:'Jost',sans-serif;font-size:.95rem;outline:none;background:white;color:var(--ink);">
+          <option value="dine">Dine In</option>
+          <option value="takeaway">Takeaway</option>
+          <option value="delivery">Home Delivery</option>
+        </select>
+      </div>
+      <div class="addr-row input-group" id="addr-row">
+        <label>Delivery Address</label>
+        <textarea id="co-addr" placeholder="House No, Street, Area, City, PIN" style="width:100%;padding:13px 16px;border:1.5px solid rgba(107,60,26,.14);border-radius:3px;font-family:'Jost',sans-serif;font-size:.95rem;resize:vertical;min-height:90px;outline:none;transition:border-color .2s;"></textarea>
+        <div class="err-msg" id="err-co-addr">Please enter a delivery address</div>
+      </div>
+      <div class="input-group">
+        <label>Special Instructions <span style="color:var(--muted);font-size:.7rem">(optional)</span></label>
+        <input type="text" id="co-note" placeholder="No sugar, extra hot, etc.">
+      </div>
+
+      <div class="sec-head">Payment Method</div>
+      <div class="pay-grid">
+        <div class="pay-opt">
+          <input type="radio" name="pay" id="pay-card" value="card">
+          <label class="pay-lbl" for="pay-card">
+            <span class="pay-icon">💳</span>
+            <span class="pay-name">Card</span>
+            <span class="pay-sub">Debit/Credit</span>
+          </label>
+        </div>
+        <div class="pay-opt">
+          <input type="radio" name="pay" id="pay-upi" value="upi">
+          <label class="pay-lbl" for="pay-upi">
+            <span class="pay-icon">📱</span>
+            <span class="pay-name">UPI</span>
+            <span class="pay-sub">GPay, PhonePe…</span>
+          </label>
+        </div>
+        <div class="pay-opt">
+          <input type="radio" name="pay" id="pay-nb" value="netbanking">
+          <label class="pay-lbl" for="pay-nb">
+            <span class="pay-icon">🏦</span>
+            <span class="pay-name">Net Bank</span>
+            <span class="pay-sub">Online transfer</span>
+          </label>
+        </div>
+        <div class="pay-opt">
+          <input type="radio" name="pay" id="pay-cod" value="cod">
+          <label class="pay-lbl" for="pay-cod">
+            <span class="pay-icon">💵</span>
+            <span class="pay-name">Cash</span>
+            <span class="pay-sub">Pay on delivery</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Card Panel -->
+      <div class="pay-panel" id="panel-card">
+        <div class="input-group">
+          <label>Card Holder Name</label>
+          <input type="text" id="card-name" placeholder="Name exactly as on card">
+        </div>
+        <div class="input-group card-num-wrap">
+          <label>Card Number</label>
+          <input type="text" id="card-num" placeholder="1234  5678  9012  3456" maxlength="19" oninput="fmtCard(this)">
+          <span class="card-brand" id="card-brand">💳</span>
+        </div>
+        <div class="card-row3">
+          <div class="input-group"><label>Expiry</label><input type="text" id="card-exp" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"></div>
+          <div class="input-group"><label>CVV</label><input type="password" id="card-cvv" placeholder="•••" maxlength="3"></div>
+          <div class="input-group"><label>PIN / ZIP</label><input type="text" placeholder="500001" maxlength="6"></div>
+        </div>
+      </div>
+
+      <!-- UPI Panel -->
+      <div class="pay-panel" id="panel-upi">
+        <div class="input-group">
+          <label>UPI ID</label>
+          <input type="text" id="upi-id" placeholder="yourname@upi">
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:-8px;margin-bottom:0;">Or choose your app:</p>
+        <div class="upi-apps">
+          <button class="upi-app-btn" onclick="selUpi(this)">📱 GPay</button>
+          <button class="upi-app-btn" onclick="selUpi(this)">🟣 PhonePe</button>
+          <button class="upi-app-btn" onclick="selUpi(this)">🔵 Paytm</button>
+          <button class="upi-app-btn" onclick="selUpi(this)">🏦 BHIM</button>
+          <button class="upi-app-btn" onclick="selUpi(this)">🟠 Amazon Pay</button>
+        </div>
+      </div>
+
+      <!-- Net Banking Panel -->
+      <div class="pay-panel" id="panel-netbanking">
+        <div class="input-group">
+          <label>Select Your Bank</label>
+          <select style="width:100%;padding:13px 16px;border:1.5px solid rgba(107,60,26,.14);border-radius:3px;font-family:'Jost',sans-serif;font-size:.95rem;outline:none;background:white;">
+            <option>State Bank of India</option>
+            <option>HDFC Bank</option>
+            <option>ICICI Bank</option>
+            <option>Axis Bank</option>
+            <option>Kotak Mahindra Bank</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- COD Panel -->
+      <div class="pay-panel" id="panel-cod">
+        <div class="cod-note">✅ &nbsp; You'll pay <strong id="cod-amt">₹0</strong> in cash. Please keep exact change if possible.</div>
+      </div>
+
+    </div>
+
+    <!-- Checkout Order Summary -->
+    <div class="co-order-card">
+      <h3>Order Summary</h3>
+      <div id="co-review-items"></div>
+      <div class="co-divider"></div>
+      <div class="co-line"><span>Subtotal</span><span id="co2-sub">₹0</span></div>
+      <div class="co-line"><span>Tax (5%)</span><span id="co2-tax">₹0</span></div>
+      <div class="co-line"><span>Packaging</span><span id="co2-pack">₹10</span></div>
+      <div class="co-line co-discount" id="co2-disc-row" style="display:none"><span>Promo</span><span id="co2-disc-val"></span></div>
+      <div class="co-divider"></div>
+      <div class="co-total"><span>Total</span><span id="co2-total">₹0</span></div>
+      <button class="place-btn" onclick="placeOrder()">Place Order →</button>
+      <div class="secure-note">🔒 Secured &amp; encrypted payment</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 6: THANK YOU
+════════════════════════════════════════ -->
+<div class="screen" id="s-thankyou">
+  <nav class="topbar">
+    <div class="brand">Sitara <em>Coffee</em></div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="avatar" id="ty-avatar">P</div>
+        <span class="name" id="ty-name-chip">Priya</span>
+      </div>
+    </div>
+  </nav>
+  <div class="ty-page">
+    <div class="ty-confetti" id="ty-confetti"></div>
+    <div class="ty-check">✅</div>
+    <div class="ty-kicker">★ &nbsp; Order Confirmed &nbsp; ★</div>
+    <h1 class="ty-h1">Thank You,<br><em id="ty-firstname">Priya!</em></h1>
+    <p class="ty-desc">Your order is confirmed and our baristas are already brewing it with love. You'll get a notification when it's ready.</p>
+    <div class="ty-receipt">
+      <div class="ty-label">Order Number</div>
+      <div class="ty-value" id="ty-order-num">#SC-0000</div>
+      <hr class="ty-divider">
+      <div class="ty-meta">
+        <div class="ty-meta-item">
+          <div class="ty-meta-label">Amount Paid</div>
+          <div class="ty-meta-val gold" id="ty-amount">₹0</div>
+        </div>
+        <div class="ty-meta-item">
+          <div class="ty-meta-label">Payment</div>
+          <div class="ty-meta-val" id="ty-payment">Card</div>
+        </div>
+        <div class="ty-meta-item">
+          <div class="ty-meta-label">Ready In</div>
+          <div class="ty-meta-val">15–20 min</div>
+        </div>
+      </div>
+    </div>
+    <div class="ty-actions">
+      <button class="btn-primary" onclick="reorder()">Order Again ☕</button>
+      <button class="btn-outline" onclick="goTo('s-menu')">Browse Menu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+const state = {
+  user: null,
+  cart: [],
+  promo: null,
+  order: null
+};
+
+const PROMO_CODES = {
+  'SITARA10': { type: 'percent', val: 10, label: '10% off' },
+  'WELCOME50': { type: 'flat', val: 50, label: '₹50 off' },
+  'COFFEE': { type: 'flat', val: 30, label: '₹30 off' },
+};
+
+const menuData = [
+  { id:1, name:'Sitara Special Latte', desc:'Signature blend with cardamom and vanilla foam.', price:180, emoji:'☕', tag:'hot', badge:'Bestseller' },
+  { id:2, name:'Classic Espresso', desc:'Bold, rich single-origin Coorg beans.', price:120, emoji:'🍵', tag:'hot', badge:null },
+  { id:3, name:'Cappuccino', desc:'Espresso, steamed milk, and velvety foam.', price:150, emoji:'☕', tag:'hot', badge:null },
+  { id:4, name:'Flat White', desc:'Silky micro-foam over a double ristretto.', price:160, emoji:'🫧', tag:'hot', badge:null },
+  { id:5, name:'Masala Chai Latte', desc:'House-spiced chai with oat milk foam.', price:130, emoji:'🍵', tag:'hot', badge:'New' },
+  { id:6, name:'Cold Brew', desc:'18-hour steeped for smooth natural sweetness.', price:160, emoji:'🧊', tag:'cold', badge:null },
+  { id:7, name:'Iced Caramel Latte', desc:'Espresso on ice with house caramel drizzle.', price:190, emoji:'🥤', tag:'cold', badge:null },
+  { id:8, name:'Mango Cold Foam', desc:'Cold brew topped with mango cold foam.', price:200, emoji:'🥭', tag:'cold', badge:'Seasonal' },
+  { id:9, name:'Strawberry Matcha', desc:'Ceremonial matcha with strawberry cold foam.', price:210, emoji:'🍵', tag:'cold', badge:null },
+  { id:10, name:'Almond Croissant', desc:'Buttery, flaky, almond cream filled. Fresh daily.', price:120, emoji:'🥐', tag:'food', badge:null },
+  { id:11, name:'Avocado Toast', desc:'Sourdough, smashed avocado, cherry tomatoes.', price:180, emoji:'🥑', tag:'food', badge:null },
+  { id:12, name:'Banana Walnut Cake', desc:'Moist cake with cream cheese frosting.', price:140, emoji:'🍰', tag:'food', badge:"Chef's Pick" },
+  { id:13, name:'Egg & Pesto Brioche', desc:'Fluffy scrambled eggs, cheese, pesto on brioche.', price:160, emoji:'🥪', tag:'food', badge:null },
+];
+
+const bgMap = { hot:'#FFF4E8', cold:'#EBF6FB', food:'#FFF9F0' };
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (screenId === 's-menu') { renderMenu(); syncMenuCart(); }
+  if (screenId === 's-cart') { renderCart(); syncCheckoutSummary(); }
+  if (screenId === 's-checkout') { syncCheckoutSummary(); prefillCheckout(); }
+}
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+function clearErr(input) {
+  input.classList.remove('error');
+  const errEl = document.getElementById('err-' + input.id.replace('reg-','').replace('login-','l'));
+  if (errEl) errEl.classList.remove('show');
+}
+
+function showErr(id, msg) {
+  const input = document.getElementById(id);
+  const err = document.getElementById('err-' + id.replace('reg-','').replace('login-','l'));
+  if (input) input.classList.add('error');
+  if (err) { if(msg) err.textContent = msg; err.classList.add('show'); }
+}
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function checkStrength(pw) {
+  const segs = ['str1','str2','str3','str4'];
+  const colors = ['#C0392B','#E67E22','#F1C40F','#2D7A4F'];
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  segs.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.style.background = i < score ? colors[score - 1] : 'rgba(107,60,26,.1)';
+  });
+}
+
+function doRegister() {
+  const fname = document.getElementById('reg-fname').value.trim();
+  const lname = document.getElementById('reg-lname').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  const pw2 = document.getElementById('reg-pw2').value;
+  let valid = true;
+
+  if (!fname) { showErr('reg-fname'); valid = false; }
+  if (!lname) { showErr('reg-lname'); valid = false; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr('reg-email', 'Enter a valid email'); valid = false; }
+  if (!phone || phone.length < 10) { showErr('reg-phone', 'Enter a valid phone number'); valid = false; }
+  if (pw.length < 6) { showErr('reg-pw', 'Minimum 6 characters required'); valid = false; }
+  if (pw !== pw2) { showErr('reg-pw2', 'Passwords do not match'); valid = false; }
+  if (!valid) return;
+
+  showLoading();
+  setTimeout(() => {
+    state.user = { fname, lname, email, phone, initials: fname[0].toUpperCase() };
+    setUserChips();
+    hideLoading();
+    showToast(`Welcome to Sitara, ${fname}! 🎉`, 'green');
+    goTo('s-menu');
+  }, 1200);
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  let valid = true;
+  if (!email) { showErr('login-email', 'Enter your email'); valid = false; }
+  if (!pw) { showErr('login-pw', 'Enter your password'); valid = false; }
+  if (!valid) return;
+
+  showLoading();
+  setTimeout(() => {
+    const name = email.split('@')[0];
+    const fname = name.charAt(0).toUpperCase() + name.slice(1);
+    state.user = { fname, lname: '', email, phone: '', initials: fname[0].toUpperCase() };
+    setUserChips();
+    hideLoading();
+    showToast(`Welcome back, ${fname}! ☕`, 'green');
+    goTo('s-menu');
+  }, 1000);
+}
+
+function handleGoogleAuth() {
+  showLoading();
+  setTimeout(() => {
+    state.user = { fname: 'Priya', lname: 'Sharma', email: 'priya@gmail.com', phone: '', initials: 'P' };
+    setUserChips();
+    hideLoading();
+    showToast('Signed in with Google ✓', 'green');
+    goTo('s-menu');
+  }, 1000);
+}
+
+function setUserChips() {
+  const u = state.user;
+  if (!u) return;
+  ['user-avatar','cart-avatar','co-avatar','ty-avatar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = u.initials;
+  });
+  ['user-name-chip','cart-name-chip','co-name-chip','ty-name-chip'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = u.fname;
+  });
+}
+
+// ══════════════════════════════════════════════
+//  MENU
+// ══════════════════════════════════════════════
+function renderMenu(tag = 'all') {
+  const grid = document.getElementById('menu-grid');
+  const items = tag === 'all' ? menuData : menuData.filter(i => i.tag === tag);
+  grid.innerHTML = items.map(item => {
+    const inCart = state.cart.find(c => c.id === item.id);
+    return `
+    <div class="food-card">
+      <div class="food-card-img" style="background:${bgMap[item.tag]}">
+        <span style="font-size:3.5rem">${item.emoji}</span>
+        ${item.badge ? `<div class="food-badge">${item.badge}</div>` : ''}
+      </div>
+      <div class="food-card-body">
+        <div class="food-name">${item.name}</div>
+        <div class="food-desc">${item.desc}</div>
+        <div class="food-footer">
+          <div class="food-price">₹${item.price}</div>
+          <button class="add-btn ${inCart?'added':''}" id="addbtn-${item.id}" onclick="addToCart(${item.id})">
+            ${inCart ? '✓' : '+'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterMenu(tag, btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  renderMenu(tag);
+}
+
+// ══════════════════════════════════════════════
+//  CART LOGIC
+// ══════════════════════════════════════════════
+function addToCart(id) {
+  const item = menuData.find(m => m.id === id);
+  if (!item) return;
+  const existing = state.cart.find(c => c.id === id);
+  if (existing) existing.qty++;
+  else state.cart.push({ ...item, qty: 1 });
+  updateCartBadge();
+  syncMenuCart();
+  const btn = document.getElementById('addbtn-' + id);
+  if (btn) { btn.textContent = '✓'; btn.classList.add('added'); setTimeout(() => { btn.textContent = '+'; btn.classList.remove('added'); }, 800); }
+  showToast(`${item.emoji} ${item.name} added!`);
+}
+
+function removeFromCart(id) {
+  state.cart = state.cart.filter(c => c.id !== id);
+  updateCartBadge(); renderCart(); syncMenuCart(); syncCheckoutSummary();
+}
+
+function changeQty(id, delta) {
+  const item = state.cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) state.cart = state.cart.filter(c => c.id !== id);
+  updateCartBadge(); renderCart(); syncMenuCart(); syncCheckoutSummary();
+}
+
+function updateCartBadge() {
+  const total = state.cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cart-count');
+  if (badge) { badge.textContent = total; badge.classList.toggle('show', total > 0); }
+}
+
+function getTotals() {
+  const sub = state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const tax = Math.round(sub * 0.05);
+  const pack = state.cart.length > 0 ? 10 : 0;
+  let discount = 0;
+  if (state.promo) {
+    if (state.promo.type === 'percent') discount = Math.round(sub * state.promo.val / 100);
+    else discount = state.promo.val;
+  }
+  const total = Math.max(0, sub + tax + pack - discount);
+  return { sub, tax, pack, discount, total };
+}
+
+// ══════════════════════════════════════════════
+//  CART SCREEN
+// ══════════════════════════════════════════════
+function renderCart() {
+  const list = document.getElementById('cart-list-items');
+  const { sub, tax, pack, discount, total } = getTotals();
+
+  if (state.cart.length === 0) {
+    list.innerHTML = `
+      <div class="cart-empty-state">
+        <div class="big-emoji">🛒</div>
+        <p>Your cart is empty</p>
+        <button class="submit-btn" style="width:auto;padding:12px 28px;" onclick="goTo('s-menu')">← Back to Menu</button>
+      </div>`;
+    document.getElementById('proceed-checkout-btn').disabled = true;
+  } else {
+    list.innerHTML = state.cart.map(item => `
+      <div class="cart-row-item">
+        <div class="cri-emoji">${item.emoji}</div>
+        <div class="cri-info">
+          <div class="cri-name">${item.name}</div>
+          <div class="cri-tag">${item.tag}</div>
+          <div class="cri-unit-price">₹${item.price} each</div>
+        </div>
+        <div class="cri-controls">
+          <button class="c-qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+          <span class="c-qty-num">${item.qty}</span>
+          <button class="c-qty-btn" onclick="changeQty(${item.id},+1)">+</button>
+        </div>
+        <div class="cri-price">₹${item.price * item.qty}</div>
+        <button class="cri-remove" onclick="removeFromCart(${item.id})">✕ Remove</button>
+      </div>`).join('');
+    document.getElementById('proceed-checkout-btn').disabled = false;
+  }
+
+  // Summary
+  const lines = document.getElementById('co-lines');
+  lines.innerHTML = state.cart.map(i =>
+    `<div class="order-line"><span>${i.name} x${i.qty}</span><span>₹${i.price * i.qty}</span></div>`
+  ).join('');
+  document.getElementById('co-sub').textContent = `₹${sub}`;
+  document.getElementById('co-tax').textContent = `₹${tax}`;
+  document.getElementById('co-pack').textContent = `₹${pack}`;
+  document.getElementById('co-total').textContent = `₹${total}`;
+
+  const discRow = document.getElementById('co-discount-row');
+  if (discount > 0) {
+    discRow.style.display = 'flex';
+    document.getElementById('co-discount-val').textContent = `-₹${discount}`;
+  } else {
+    discRow.style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  MINI CART (menu sidebar)
+// ══════════════════════════════════════════════
+function syncMenuCart() {
+  const empty = document.getElementById('mc-empty');
+  const items = document.getElementById('mc-items');
+  const footer = document.getElementById('mc-footer');
+  if (!empty) return;
+
+  if (state.cart.length === 0) {
+    empty.style.display = 'flex'; items.style.display = 'none'; footer.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none'; items.style.display = 'block'; footer.style.display = 'block';
+
+  items.innerHTML = state.cart.map(item => `
+    <div class="mc-item">
+      <div class="mc-item-emoji">${item.emoji}</div>
+      <div class="mc-item-name">${item.name}</div>
+      <div class="mc-qty">
+        <button class="mc-qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+        <span class="mc-qty-num">${item.qty}</span>
+        <button class="mc-qty-btn" onclick="changeQty(${item.id},+1)">+</button>
+      </div>
+      <div class="mc-item-price">₹${item.price * item.qty}</div>
+    </div>`).join('');
+
+  const { sub, tax, total } = getTotals();
+  document.getElementById('mc-sub').textContent = `₹${sub}`;
+  document.getElementById('mc-tax').textContent = `₹${tax}`;
+  document.getElementById('mc-total').textContent = `₹${total}`;
+}
+
+// ══════════════════════════════════════════════
+//  PROMO CODE
+// ══════════════════════════════════════════════
+function applyPromo() {
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  const msg = document.getElementById('promo-msg');
+  if (!code) { msg.className = 'promo-msg err'; msg.textContent = 'Enter a promo code'; return; }
+  const promo = PROMO_CODES[code];
+  if (!promo) { msg.className = 'promo-msg err'; msg.textContent = '✕ Invalid promo code'; state.promo = null; }
+  else {
+    state.promo = promo;
+    msg.className = 'promo-msg ok'; msg.textContent = `✓ Applied! ${promo.label}`;
+    showToast(`Promo "${code}" applied — ${promo.label} 🎉`, 'green');
+  }
+  renderCart();
+}
+
+// ══════════════════════════════════════════════
+//  CHECKOUT
+// ══════════════════════════════════════════════
+function syncCheckoutSummary() {
+  const { sub, tax, pack, discount, total } = getTotals();
+  const coReview = document.getElementById('co-review-items');
+  if (coReview) {
+    coReview.innerHTML = state.cart.map(i => `
+      <div class="co-item">
+        <div class="co-item-l">
+          <div class="co-item-emoji">${i.emoji}</div>
+          <div>
+            <div class="co-item-name">${i.name}</div>
+            <div class="co-item-qty">x${i.qty}</div>
+          </div>
+        </div>
+        <div class="co-item-price">₹${i.price * i.qty}</div>
+      </div>`).join('');
+  }
+  setText('co2-sub', `₹${sub}`);
+  setText('co2-tax', `₹${tax}`);
+  setText('co2-pack', `₹${pack}`);
+  setText('co2-total', `₹${total}`);
+  setText('cod-amt', `₹${total}`);
+  const dr = document.getElementById('co2-disc-row');
+  if (dr) {
+    if (discount > 0) { dr.style.display = 'flex'; setText('co2-disc-val', `-₹${discount}`); }
+    else dr.style.display = 'none';
+  }
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function prefillCheckout() {
+  const u = state.user;
+  if (!u) return;
+  const fn = document.getElementById('co-fname');
+  const ln = document.getElementById('co-lname');
+  const ph = document.getElementById('co-phone');
+  if (fn && !fn.value) fn.value = u.fname;
+  if (ln && !ln.value) ln.value = u.lname;
+  if (ph && !ph.value) ph.value = u.phone || '';
+}
+
+function toggleAddress() {
+  const type = document.getElementById('co-type').value;
+  const row = document.getElementById('addr-row');
+  row.classList.toggle('show', type === 'delivery');
+}
+
+// Payment panels
+document.querySelectorAll('input[name="pay"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('show'));
+    const panel = document.getElementById('panel-' + radio.value);
+    if (panel) panel.classList.add('show');
+    syncCheckoutSummary();
+  });
+});
+
+function selUpi(btn) {
+  document.querySelectorAll('.upi-app-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function fmtCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  v = v.replace(/(.{4})/g,'$1  ').trim();
+  input.value = v;
+}
+function fmtExp(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,4);
+  if (v.length > 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+  input.value = v;
+}
+
+// ══════════════════════════════════════════════
+//  PLACE ORDER
+// ══════════════════════════════════════════════
+function placeOrder() {
+  const phone = document.getElementById('co-phone')?.value?.trim();
+  const payEl = document.querySelector('input[name="pay"]:checked');
+  const type = document.getElementById('co-type')?.value;
+
+  if (!phone) { showErr('co-phone', 'Please enter your phone number'); return; }
+  if (type === 'delivery') {
+    const addr = document.getElementById('co-addr')?.value?.trim();
+    if (!addr) { showErr('co-addr', 'Please enter your delivery address'); return; }
+  }
+  if (!payEl) { showToast('⚠ Please select a payment method'); return; }
+  if (state.cart.length === 0) { showToast('⚠ Your cart is empty'); return; }
+
+  // Extra card validation
+  if (payEl.value === 'card') {
+    const num = document.getElementById('card-num')?.value?.replace(/\s/g,'');
+    if (!num || num.length < 16) { showToast('⚠ Enter a valid 16-digit card number'); return; }
+    const exp = document.getElementById('card-exp')?.value;
+    if (!exp || exp.length < 4) { showToast('⚠ Enter card expiry date'); return; }
+    const cvv = document.getElementById('card-cvv')?.value;
+    if (!cvv || cvv.length < 3) { showToast('⚠ Enter CVV'); return; }
+  }
+  if (payEl.value === 'upi') {
+    const upiId = document.getElementById('upi-id')?.value?.trim();
+    const upiApp = document.querySelector('.upi-app-btn.sel');
+    if (!upiId && !upiApp) { showToast('⚠ Enter UPI ID or select an app'); return; }
+  }
+
+  showLoading('Processing your order…');
+  const { total } = getTotals();
+  const payLabels = { card:'Credit/Debit Card', upi:'UPI', netbanking:'Net Banking', cod:'Cash on Delivery' };
+  const orderId = '#SC-' + Math.floor(Math.random()*90000+10000);
+
+  setTimeout(() => {
+    state.order = {
+      id: orderId,
+      total,
+      payment: payLabels[payEl.value],
+      items: [...state.cart],
+    };
+    // Clear cart
+    state.cart = [];
+    state.promo = null;
+    updateCartBadge();
+    hideLoading();
+
+    // Populate thank you screen
+    document.getElementById('ty-order-num').textContent = orderId;
+    document.getElementById('ty-amount').textContent = `₹${total}`;
+    document.getElementById('ty-payment').textContent = payLabels[payEl.value];
+    if (state.user) {
+      document.getElementById('ty-firstname').textContent = state.user.fname + '!';
+    }
+
+    goTo('s-thankyou');
+    launchConfetti();
+  }, 1800);
+}
+
+function reorder() {
+  if (state.order && state.order.items) {
+    state.cart = state.order.items.map(i => ({...i}));
+    updateCartBadge();
+  }
+  goTo('s-menu');
+}
+
+// ══════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════
+function launchConfetti() {
+  const container = document.getElementById('ty-confetti');
+  container.innerHTML = '';
+  const cols = ['#B8883A','#F7F1E3','#8B5E3C','#D4A85A','#fff','#2D7A4F'];
+  for (let i = 0; i < 55; i++) {
+    const d = document.createElement('div');
+    d.className = 'ty-confetti-dot';
+    const sz = Math.random()*9+4;
+    d.style.cssText = `left:${Math.random()*100}%; background:${cols[Math.floor(Math.random()*cols.length)]}; width:${sz}px; height:${sz}px; border-radius:${Math.random()>.5?'50%':'2px'}; animation-duration:${Math.random()*3+2.5}s; animation-delay:${Math.random()*2}s;`;
+    container.appendChild(d);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  TOAST / LOADING
+// ══════════════════════════════════════════════
+function showToast(msg, type='') {
+  const tc = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type?' '+type:'');
+  t.textContent = msg;
+  tc.appendChild(t);
+  setTimeout(() => { t.classList.add('bye'); setTimeout(() => t.remove(), 350); }, 3000);
+}
+
+function showLoading(txt) {
+  const el = document.getElementById('loading');
+  el.classList.add('show');
+  if (txt) el.querySelector('.loading-text').textContent = txt;
+}
+function hideLoading() {
+  document.getElementById('loading').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderMenu();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2066 @@
+#“Create a fully responsive coffee shop website named Sitara Coffee. It should include Home, Menu, About, Contact, Login, and Table Booking pages. Use HTML, CSS, and JavaScript. Add a modern UI with coffee-themed colors, smooth animations, and mobile responsiveness.”
+#“Design a premium coffee shop UI with warm coffee colors (#4B2E14, #C9943A, cream). Add hero section with background image, animated buttons, product cards for menu items, and sticky navigation bar.”
+#“Build a shopping cart system for a coffee ordering website using JavaScript. Users should be able to add coffee items, increase/decrease quantity, remove items, and see total price dynamically updated.”
+#“Create a table reservation system for a coffee shop. Include form fields: name, email, phone number, date, time, and number of persons. On submit, show confirmation message and clear form.”
+#“Debug my JavaScript code for a coffee shop website. Fix issues related to undefined variables, button click not working, and form not submitting properly. Explain fixes briefly.”
+#“Guide me step-by-step to deploy my HTML/CSS/JS coffee shop website to GitHub Pages so it becomes a live working website with a public URL.”
+#“Make my coffee shop website fully responsive for mobile, tablet, and desktop using CSS Flexbox and Grid. Ensure navbar collapses into hamburger menu on mobile.”
+#“Add smooth animations to my coffee website including fade-in sections, hover effects on buttons/cards, loading spinner animation, and toast notifications.”
+#“Create a simple login page for coffee shop website using HTML, CSS, and JavaScript with validation for email and password fields.”
+#“Upgrade my coffee shop project into a professional-level web app with better UI, improved JavaScript structure, reusable components, and clean code organization.”
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sitara Coffee — Chennai</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #0C0804;
+  --parch:    #F6EFE0;
+  --cream:    #FAF7F0;
+  --gold:     #B07D3A;
+  --gold2:    #C99A52;
+  --gold3:    #E8C878;
+  --espresso: #2E1A0A;
+  --roast:    #5C3215;
+  --muted:    #8A7660;
+  --line:     rgba(176,125,58,.16);
+  --shadow:   0 4px 36px rgba(12,8,4,.10);
+  --shadowlg: 0 20px 64px rgba(12,8,4,.18);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+}
+
+/* ── UTILITY ── */
+.hidden{display:none!important;}
+img{display:block;max-width:100%;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+/* ══════════════════════════════════════
+   SCREEN ROUTER
+══════════════════════════════════════ */
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ══════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════ */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 56px;height:72px;
+  transition:background .4s,backdrop-filter .4s,box-shadow .4s;
+}
+.navbar.solid{
+  background:rgba(12,8,4,.94);
+  backdrop-filter:blur(12px);
+  box-shadow:0 1px 0 rgba(176,125,58,.15);
+}
+.nav-brand{
+  font-family:'Playfair Display',serif;
+  font-size:1.55rem;font-weight:700;
+  color:var(--gold2);letter-spacing:.03em;
+  cursor:pointer;
+}
+.nav-brand em{font-style:italic;color:var(--gold3);}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{
+  color:rgba(255,255,255,.72);font-size:.8rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;transition:color .2s;
+}
+.nav-links a:hover{color:var(--gold2);}
+.nav-actions{display:flex;gap:10px;align-items:center;}
+.nav-reserve{
+  padding:9px 22px;background:var(--gold);color:white;
+  border:none;border-radius:2px;font-size:.78rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  transition:background .2s,transform .15s;
+}
+.nav-reserve:hover{background:var(--gold2);transform:translateY(-1px);}
+.nav-cart-btn{
+  position:relative;width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.2);background:transparent;
+  color:white;font-size:1rem;display:flex;align-items:center;
+  justify-content:center;transition:all .2s;
+}
+.nav-cart-btn:hover{border-color:var(--gold2);color:var(--gold2);}
+.cart-pip{
+  position:absolute;top:-3px;right:-3px;
+  width:17px;height:17px;border-radius:50%;
+  background:var(--gold);color:white;
+  font-size:.6rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(0);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.cart-pip.on{opacity:1;transform:scale(1);}
+.nav-user-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 12px;border:1px solid rgba(255,255,255,.15);
+  border-radius:99px;cursor:pointer;
+}
+.user-av{
+  width:25px;height:25px;background:var(--gold);border-radius:50%;
+  font-size:.7rem;font-weight:700;color:white;
+  display:flex;align-items:center;justify-content:center;
+}
+.user-nm{color:rgba(255,255,255,.75);font-size:.8rem;}
+
+/* ══════════════════════════════════════
+   LANDING — HERO
+══════════════════════════════════════ */
+#s-home{background:var(--ink);}
+
+.hero{
+  min-height:100vh;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 60%, rgba(176,125,58,.13) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(94,50,21,.4) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 20%, rgba(46,26,10,.6) 0%,transparent 55%);
+  background-color:#0C0804;
+}
+/* grain texture */
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.35;pointer-events:none;
+}
+
+.hero-content{
+  position:relative;z-index:2;
+  text-align:center;padding:120px 32px 80px;
+  max-width:900px;
+}
+.hero-est{
+  font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--gold2);margin-bottom:28px;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+}
+.hero-est::before,.hero-est::after{content:'';width:36px;height:1px;background:var(--gold);}
+.hero-h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,7vw,6.5rem);
+  color:var(--parch);line-height:1.05;
+  font-weight:700;margin-bottom:12px;
+}
+.hero-h1 em{font-style:italic;color:var(--gold2);}
+.hero-tagline{
+  font-family:'Crimson Pro',serif;
+  font-size:clamp(1.1rem,2vw,1.45rem);
+  color:rgba(246,239,224,.6);font-style:italic;
+  line-height:1.65;max-width:580px;margin:0 auto 48px;
+}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-gold{
+  padding:15px 36px;background:var(--gold);color:white;
+  border:none;border-radius:2px;font-size:.85rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:500;
+  transition:all .2s;
+}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(176,125,58,.35);}
+.btn-outline-w{
+  padding:15px 36px;background:transparent;
+  color:rgba(255,255,255,.8);
+  border:1px solid rgba(255,255,255,.25);border-radius:2px;
+  font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;
+  transition:all .2s;
+}
+.btn-outline-w:hover{border-color:var(--gold2);color:var(--gold2);}
+
+/* scroll ticker */
+.ticker-wrap{
+  position:relative;overflow:hidden;
+  background:var(--roast);padding:14px 0;
+  border-top:1px solid rgba(176,125,58,.2);
+  border-bottom:1px solid rgba(176,125,58,.2);
+}
+.ticker-track{
+  display:flex;gap:0;white-space:nowrap;
+  animation:ticker 28s linear infinite;
+}
+.ticker-track:hover{animation-play-state:paused;}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{
+  padding:0 28px;font-size:.75rem;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(246,239,224,.65);
+  display:inline-flex;align-items:center;gap:16px;
+}
+.ticker-item::after{content:'✦';color:var(--gold);font-size:.6rem;}
+
+/* ══════════════════════════════════════
+   STORY SECTION
+══════════════════════════════════════ */
+.story-section{
+  background:var(--cream);
+  padding:120px 80px;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.story-label{
+  font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.story-label::before{content:'';width:28px;height:1px;background:var(--gold);}
+.story-h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,3.5vw,3.2rem);
+  line-height:1.15;margin-bottom:24px;font-weight:700;
+}
+.story-h2 em{font-style:italic;color:var(--gold);}
+.story-body{
+  font-family:'Crimson Pro',serif;
+  font-size:1.15rem;color:var(--muted);line-height:1.8;margin-bottom:32px;
+}
+.story-stats{
+  display:flex;gap:48px;padding-top:32px;
+  border-top:1px solid var(--line);
+}
+.stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:2.4rem;color:var(--gold);line-height:1;
+}
+.stat-lbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+.story-visual{
+  position:relative;
+}
+.story-img-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;gap:12px;
+}
+.story-tile{
+  border-radius:4px;overflow:hidden;
+  background:var(--espresso);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;aspect-ratio:1;
+  position:relative;
+}
+.story-tile:first-child{grid-row:span 2;font-size:5rem;}
+.story-tile::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 40%,rgba(12,8,4,.45));
+}
+.story-badge{
+  position:absolute;bottom:-20px;right:-20px;
+  width:110px;height:110px;border-radius:50%;
+  background:var(--gold);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:4px solid var(--cream);z-index:2;
+  animation:spin 25s linear infinite;
+}
+.story-badge span{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:white;line-height:1;}
+.story-badge small{font-size:.55rem;letter-spacing:.1em;color:rgba(255,255,255,.8);text-transform:uppercase;}
+
+/* ══════════════════════════════════════
+   MENU SECTION (landing preview)
+══════════════════════════════════════ */
+.menu-preview{
+  background:var(--ink);padding:100px 80px;
+}
+.section-header{text-align:center;margin-bottom:64px;}
+.section-header .label{
+  font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;
+}
+.section-header h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,3.5vw,3rem);color:var(--parch);line-height:1.15;
+}
+.section-header h2 em{font-style:italic;color:var(--gold2);}
+.section-header p{
+  font-family:'Crimson Pro',serif;
+  font-size:1.1rem;color:rgba(246,239,224,.5);
+  margin-top:10px;max-width:480px;margin-left:auto;margin-right:auto;
+}
+
+.preview-categories{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;
+}
+.cat-pill{
+  padding:9px 24px;border-radius:99px;
+  border:1px solid rgba(255,255,255,.14);
+  color:rgba(255,255,255,.55);font-size:.78rem;
+  letter-spacing:.1em;background:transparent;transition:all .2s;
+}
+.cat-pill.on,.cat-pill:hover{background:var(--gold);border-color:var(--gold);color:white;}
+
+.menu-cards{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
+}
+.menu-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(176,125,58,.14);
+  border-radius:6px;overflow:hidden;
+  transition:transform .22s,box-shadow .22s,border-color .22s;
+}
+.menu-card:hover{transform:translateY(-6px);box-shadow:0 20px 56px rgba(0,0,0,.35);border-color:rgba(176,125,58,.3);}
+.mc-img{
+  height:160px;display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;position:relative;
+}
+.mc-badge{
+  position:absolute;top:10px;left:10px;
+  background:var(--gold);color:white;
+  font-size:.58rem;font-weight:600;letter-spacing:.1em;
+  padding:3px 10px;border-radius:99px;text-transform:uppercase;
+}
+.mc-body{padding:18px 20px;}
+.mc-name{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--parch);margin-bottom:4px;}
+.mc-desc{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+.mc-footer{display:flex;align-items:center;justify-content:space-between;}
+.mc-price{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold2);font-weight:700;}
+.mc-add{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--gold);color:white;border:none;
+  font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.mc-add:hover{background:var(--gold2);transform:scale(1.12);}
+.mc-add.done{background:#2D7A4F;font-size:.75rem;}
+
+.menu-cta{text-align:center;margin-top:56px;}
+
+/* ══════════════════════════════════════
+   EXPERIENCE SECTION
+══════════════════════════════════════ */
+.experience-section{
+  background:var(--parch);padding:110px 80px;
+}
+.exp-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+  margin-top:64px;
+}
+.exp-tile{
+  background:var(--espresso);
+  padding:52px 40px;position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.exp-tile:hover{background:var(--roast);}
+.exp-tile::before{
+  content:attr(data-num);
+  position:absolute;top:-12px;right:20px;
+  font-family:'Playfair Display',serif;
+  font-size:7rem;color:rgba(176,125,58,.07);
+  font-weight:700;line-height:1;pointer-events:none;
+}
+.exp-icon{font-size:2rem;margin-bottom:20px;}
+.exp-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.35rem;color:var(--parch);margin-bottom:12px;
+}
+.exp-title em{font-style:italic;color:var(--gold2);}
+.exp-body{font-family:'Crimson Pro',serif;font-size:1rem;color:var(--muted);line-height:1.7;}
+
+/* ══════════════════════════════════════
+   VISIT SECTION
+══════════════════════════════════════ */
+.visit-section{
+  background:var(--ink);padding:110px 80px;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.visit-info .label{
+  font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.visit-info .label::before{content:'';width:28px;height:1px;background:var(--gold);}
+.visit-info h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,3vw,3rem);color:var(--parch);
+  line-height:1.15;margin-bottom:24px;
+}
+.visit-info h2 em{font-style:italic;color:var(--gold2);}
+.visit-details{display:flex;flex-direction:column;gap:20px;margin-bottom:36px;}
+.visit-row{display:flex;gap:16px;align-items:flex-start;}
+.visit-row-icon{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(176,125,58,.12);border:1px solid rgba(176,125,58,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+.visit-row-text h4{color:var(--parch);font-size:.85rem;font-weight:500;margin-bottom:2px;}
+.visit-row-text p{color:var(--muted);font-size:.82rem;line-height:1.55;}
+
+/* Reserve form */
+.reserve-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(176,125,58,.18);
+  border-radius:8px;padding:40px 36px;
+}
+.reserve-card h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;color:var(--parch);margin-bottom:6px;
+}
+.reserve-card h3 em{font-style:italic;color:var(--gold2);}
+.reserve-card p{color:var(--muted);font-size:.85rem;margin-bottom:28px;}
+.r-group{margin-bottom:16px;}
+.r-group label{
+  display:block;font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:7px;
+}
+.r-group input,.r-group select{
+  width:100%;padding:12px 16px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(176,125,58,.18);border-radius:3px;
+  color:var(--parch);font-family:'Jost',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .2s;
+}
+.r-group input::placeholder{color:rgba(246,239,224,.25);}
+.r-group input:focus,.r-group select:focus{border-color:var(--gold);}
+.r-group select option{background:var(--espresso);color:var(--parch);}
+.r-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.reserve-btn{
+  width:100%;padding:14px;background:var(--gold);color:white;
+  border:none;border-radius:3px;margin-top:8px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;
+  transition:all .2s;
+}
+.reserve-btn:hover{background:var(--gold2);transform:translateY(-1px);}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.site-footer{
+  background:var(--espresso);
+  padding:64px 80px 40px;
+  border-top:1px solid rgba(176,125,58,.15);
+}
+.footer-top{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:48px;margin-bottom:48px;
+}
+.footer-brand{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;color:var(--gold2);margin-bottom:12px;
+}
+.footer-brand em{font-style:italic;color:var(--gold3);}
+.footer-tagline{
+  font-family:'Crimson Pro',serif;font-style:italic;
+  color:var(--muted);font-size:.95rem;line-height:1.6;
+}
+.footer-col h4{
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:16px;
+}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-col a{color:var(--muted);font-size:.85rem;cursor:pointer;transition:color .2s;}
+.footer-col a:hover{color:var(--gold2);}
+.footer-bottom{
+  border-top:1px solid rgba(176,125,58,.1);padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.footer-bottom p{color:var(--muted);font-size:.75rem;}
+
+/* ══════════════════════════════════════
+   AUTH SCREENS
+══════════════════════════════════════ */
+.auth-screen{background:var(--ink);}
+.auth-layout{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;
+  min-height:calc(100vh - 72px);margin-top:72px;
+}
+.auth-left{
+  background:var(--espresso);padding:80px 64px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.auth-left::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(176,125,58,.1) 0%,transparent 70%);
+}
+.auth-cup{
+  font-size:5.5rem;margin-bottom:36px;
+  animation:floatY 3.5s ease-in-out infinite;
+  position:relative;z-index:1;
+}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.auth-left-quote{
+  font-family:'Playfair Display',serif;
+  font-size:1.75rem;color:var(--parch);
+  text-align:center;line-height:1.4;
+  position:relative;z-index:1;
+}
+.auth-left-quote em{font-style:italic;color:var(--gold2);}
+.auth-left-sub{
+  color:var(--muted);font-size:.85rem;text-align:center;
+  margin-top:14px;position:relative;z-index:1;line-height:1.6;
+}
+.auth-perks{
+  margin-top:32px;display:flex;flex-direction:column;gap:10px;
+  width:100%;max-width:300px;position:relative;z-index:1;
+}
+.auth-perk{
+  display:flex;gap:12px;align-items:center;
+  padding:11px 16px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(176,125,58,.12);border-radius:4px;
+}
+.auth-perk-icon{font-size:1.1rem;}
+.auth-perk-text{color:rgba(246,239,224,.6);font-size:.8rem;}
+
+.auth-right{
+  padding:64px 72px;
+  display:flex;flex-direction:column;justify-content:center;
+  background:var(--cream);
+}
+.auth-form-box{width:100%;max-width:420px;margin:0 auto;}
+.auth-form-box h2{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;margin-bottom:6px;
+}
+.auth-form-box h2 em{font-style:italic;color:var(--gold);}
+.auth-form-box .sub{color:var(--muted);font-size:.88rem;margin-bottom:32px;line-height:1.55;}
+
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.f-group{margin-bottom:16px;}
+.f-group label{
+  display:block;font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:7px;
+}
+.f-group input{
+  width:100%;padding:12px 16px;
+  border:1.5px solid rgba(92,50,21,.13);border-radius:3px;
+  background:white;color:var(--ink);font-size:.9rem;
+  outline:none;transition:border-color .2s;
+}
+.f-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(176,125,58,.1);}
+.f-group input.err-inp{border-color:#B33A3A;}
+.f-err{font-size:.72rem;color:#B33A3A;margin-top:4px;display:none;}
+.f-err.show{display:block;}
+
+.pw-row{position:relative;}
+.pw-row input{padding-right:44px;}
+.pw-eye{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:.85rem;
+}
+
+.strength-track{display:flex;gap:4px;margin-top:6px;}
+.strength-seg{flex:1;height:2px;background:rgba(92,50,21,.1);border-radius:99px;transition:background .3s;}
+
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(92,50,21,.12);}
+.divider span{font-size:.72rem;color:var(--muted);}
+
+.google-btn{
+  width:100%;padding:12px;background:white;
+  border:1.5px solid rgba(92,50,21,.13);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:.88rem;transition:all .2s;margin-bottom:4px;
+}
+.google-btn:hover{border-color:var(--gold);background:rgba(176,125,58,.03);}
+
+.submit-btn{
+  width:100%;padding:14px;background:var(--gold);color:white;
+  border:none;border-radius:3px;margin-top:4px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:.9rem;letter-spacing:.06em;
+  transition:all .2s;
+}
+.submit-btn:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(176,125,58,.3);}
+
+.auth-sw{color:var(--muted);font-size:.83rem;text-align:center;margin-top:18px;}
+.auth-sw a{color:var(--roast);font-weight:500;cursor:pointer;}
+.auth-sw a:hover{color:var(--gold);}
+
+/* ══════════════════════════════════════
+   ORDER FLOW SCREENS
+══════════════════════════════════════ */
+.flow-screen{background:var(--cream);}
+.flow-header{
+  margin-top:72px;
+  background:white;
+  border-bottom:1px solid var(--line);
+  padding:20px 56px;
+}
+.steps-row{
+  display:flex;align-items:center;justify-content:center;gap:0;
+}
+.step-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.step-circle{
+  width:26px;height:26px;border-radius:50%;
+  border:1.5px solid var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:600;transition:all .3s;
+}
+.step-item.active{color:var(--gold);}
+.step-item.active .step-circle{background:var(--gold);border-color:var(--gold);color:white;}
+.step-item.done{color:var(--roast);}
+.step-item.done .step-circle{background:var(--roast);border-color:var(--roast);color:white;font-size:0;}
+.step-item.done .step-circle::after{content:'✓';font-size:.72rem;}
+.step-dash{width:44px;height:1px;background:var(--line);margin:0 4px;}
+
+.flow-body{
+  flex:1;display:grid;grid-template-columns:1fr 380px;
+  gap:32px;padding:48px 56px;
+  max-width:1200px;margin:0 auto;width:100%;
+}
+.flow-left h2{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;margin-bottom:6px;
+}
+.flow-left h2 em{font-style:italic;color:var(--gold);}
+.flow-left .sub{color:var(--muted);font-size:.88rem;margin-bottom:32px;}
+
+/* order sidebar card */
+.sidebar-card{
+  background:white;border-radius:8px;
+  box-shadow:var(--shadow);padding:26px 24px;
+  position:sticky;top:88px;
+}
+.sidebar-card h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;margin-bottom:18px;
+  padding-bottom:14px;border-bottom:1px solid var(--line);
+}
+.s-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;}
+.s-item-l{display:flex;gap:8px;align-items:center;}
+.s-emoji{font-size:1.2rem;}
+.s-name{font-size:.84rem;}
+.s-qty{font-size:.72rem;color:var(--muted);}
+.s-price{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);font-weight:600;white-space:nowrap;}
+.s-div{height:1px;background:var(--line);margin:14px 0;}
+.s-line{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:7px;}
+.s-total{display:flex;justify-content:space-between;font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-top:8px;}
+.s-total span:last-child{color:var(--gold);}
+.s-discount{color:#2D7A4F;font-size:.8rem;}
+.s-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:8px;}
+
+/* MENU SCREEN */
+.menu-screen-wrap{
+  flex:1;display:grid;grid-template-columns:1fr 320px;
+  margin-top:72px;
+}
+.menu-main{padding:40px 48px;background:var(--cream);}
+.menu-main h2{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;margin-bottom:6px;
+}
+.menu-main h2 em{font-style:italic;color:var(--gold);}
+.menu-main .sub{color:var(--muted);font-size:.88rem;margin-bottom:28px;}
+.menu-filters-row{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;}
+.mf-pill{
+  padding:8px 20px;border-radius:99px;
+  border:1px solid rgba(92,50,21,.14);
+  color:var(--muted);font-size:.78rem;
+  letter-spacing:.08em;background:white;transition:all .2s;
+}
+.mf-pill.on,.mf-pill:hover{background:var(--gold);border-color:var(--gold);color:white;}
+.menu-items-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:18px;
+}
+.food-card{
+  background:white;border-radius:6px;overflow:hidden;
+  box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;
+}
+.food-card:hover{transform:translateY(-5px);box-shadow:var(--shadowlg);}
+.fc-img{
+  height:150px;display:flex;align-items:center;justify-content:center;
+  font-size:3rem;position:relative;
+}
+.fc-badge{
+  position:absolute;top:8px;left:8px;
+  background:var(--gold);color:white;
+  font-size:.58rem;font-weight:700;letter-spacing:.1em;
+  padding:3px 9px;border-radius:99px;text-transform:uppercase;
+}
+.fc-body{padding:14px 16px;}
+.fc-name{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:3px;}
+.fc-desc{font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+.fc-foot{display:flex;align-items:center;justify-content:space-between;}
+.fc-price{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--roast);}
+.fc-add{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--ink);color:white;border:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;transition:all .2s;
+}
+.fc-add:hover{background:var(--gold);transform:scale(1.1);}
+.fc-add.added{background:#2D7A4F;font-size:.7rem;}
+
+/* Mini Cart */
+.mini-cart{
+  background:var(--ink);padding:28px 24px;
+  display:flex;flex-direction:column;
+  position:sticky;top:72px;height:calc(100vh - 72px);
+  overflow-y:auto;border-left:1px solid rgba(255,255,255,.05);
+}
+.mini-cart::-webkit-scrollbar{width:3px;}
+.mini-cart::-webkit-scrollbar-thumb{background:rgba(176,125,58,.3);border-radius:99px;}
+.mc-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.15rem;color:var(--parch);
+  margin-bottom:20px;padding-bottom:14px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.mc-empty-state{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;color:var(--muted);text-align:center;
+}
+.mc-empty-state .icon{font-size:3rem;opacity:.2;}
+.mc-empty-state p{font-size:.83rem;}
+.mc-list{flex:1;overflow-y:auto;}
+.mc-row{
+  display:flex;gap:10px;align-items:center;
+  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);
+  animation:slideR .25s ease;
+}
+@keyframes slideR{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.mc-em{font-size:1.3rem;width:32px;text-align:center;}
+.mc-nm{color:var(--parch);font-size:.82rem;flex:1;line-height:1.35;}
+.mc-qc{display:flex;align-items:center;gap:7px;}
+.mc-qb{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:none;
+  color:white;font-size:.85rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.mc-qb:hover{background:var(--gold);}
+.mc-qn{color:white;font-size:.8rem;min-width:16px;text-align:center;}
+.mc-pr{color:var(--gold2);font-family:'Playfair Display',serif;font-size:.88rem;}
+
+.mc-footer{padding-top:14px;border-top:1px solid rgba(255,255,255,.07);margin-top:4px;}
+.mc-sub-row{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem;margin-bottom:5px;}
+.mc-total-row{display:flex;justify-content:space-between;color:var(--parch);font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:14px;margin-top:8px;}
+.mc-total-row span:last-child{color:var(--gold2);}
+.mc-checkout-btn{
+  width:100%;padding:13px;background:var(--gold);color:white;
+  border:none;border-radius:3px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:.85rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;
+}
+.mc-checkout-btn:hover{background:var(--gold2);}
+.mc-checkout-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* CART SCREEN */
+.cart-screen-layout{
+  flex:1;display:grid;grid-template-columns:1fr 380px;
+  gap:32px;padding:48px 56px;
+  max-width:1200px;margin:0 auto;width:100%;
+}
+.cart-item-row{
+  display:flex;gap:14px;align-items:center;
+  background:white;padding:16px 18px;border-radius:6px;
+  box-shadow:var(--shadow);margin-bottom:12px;
+}
+.cir-em{font-size:2rem;width:52px;text-align:center;}
+.cir-info{flex:1;}
+.cir-name{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;}
+.cir-tag{font-size:.7rem;color:var(--muted);text-transform:capitalize;}
+.cir-unit{font-size:.78rem;color:var(--muted);margin-top:3px;}
+.cir-qc{display:flex;align-items:center;gap:10px;}
+.cq-btn{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--line);background:var(--cream);
+  font-size:.9rem;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;transition:all .2s;
+}
+.cq-btn:hover{background:var(--gold);border-color:var(--gold);color:white;}
+.cq-num{font-size:.9rem;min-width:20px;text-align:center;font-weight:500;}
+.cir-price{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--roast);min-width:60px;text-align:right;}
+.cir-rm{background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer;padding:4px;transition:color .2s;}
+.cir-rm:hover{color:#B33A3A;}
+
+.promo-row{display:flex;gap:8px;margin:16px 0 6px;}
+.promo-input{
+  flex:1;padding:10px 14px;
+  border:1.5px solid var(--line);border-radius:3px;
+  font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;
+  outline:none;transition:border-color .2s;background:white;
+}
+.promo-input:focus{border-color:var(--gold);}
+.promo-apply-btn{
+  padding:10px 16px;background:var(--ink);color:white;
+  border:none;border-radius:3px;font-size:.78rem;
+  cursor:pointer;transition:background .2s;white-space:nowrap;
+}
+.promo-apply-btn:hover{background:var(--roast);}
+.promo-result{font-size:.75rem;margin-bottom:6px;}
+.promo-result.ok{color:#2D7A4F;}
+.promo-result.err{color:#B33A3A;}
+
+.cart-empty-box{
+  text-align:center;padding:80px 40px;color:var(--muted);
+  grid-column:1/-1;
+}
+.cart-empty-box .big-em{font-size:5rem;opacity:.15;margin-bottom:16px;}
+.cart-empty-box p{font-size:.95rem;margin-bottom:20px;}
+
+.proceed-btn{
+  width:100%;padding:14px;background:var(--gold);color:white;
+  border:none;border-radius:3px;margin-top:16px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:.9rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;
+}
+.proceed-btn:hover{background:var(--gold2);transform:translateY(-1px);}
+.proceed-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.back-a{display:block;text-align:center;margin-top:12px;color:var(--muted);font-size:.8rem;cursor:pointer;transition:color .2s;}
+.back-a:hover{color:var(--gold);}
+
+/* CHECKOUT */
+.sec-lbl{
+  font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin:28px 0 14px;
+  display:flex;align-items:center;gap:10px;
+}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* Payment */
+.pay-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.pay-opt{position:relative;}
+.pay-opt input{position:absolute;opacity:0;width:0;height:0;}
+.pay-lbl{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:16px 10px;border:1.5px solid var(--line);
+  border-radius:6px;cursor:pointer;
+  background:white;text-align:center;transition:all .2s;
+}
+.pay-lbl:hover{border-color:var(--gold);}
+.pay-opt input:checked + .pay-lbl{
+  border-color:var(--gold);background:rgba(176,125,58,.06);
+  box-shadow:0 0 0 3px rgba(176,125,58,.1);
+}
+.pay-icon{font-size:1.55rem;}
+.pay-name{font-size:.74rem;font-weight:600;}
+.pay-sub{font-size:.63rem;color:var(--muted);}
+
+.pay-panel{
+  display:none;background:rgba(176,125,58,.04);
+  border:1px solid rgba(176,125,58,.18);
+  border-radius:6px;padding:20px;margin-top:10px;
+}
+.pay-panel.show{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.card-num-wrap{position:relative;}
+.card-num-wrap input{padding-right:52px;letter-spacing:.1em;}
+.card-brand-ic{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:1.1rem;pointer-events:none;}
+.card-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;}
+
+.upi-apps{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.upi-app-b{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 14px;border:1px solid var(--line);
+  border-radius:4px;background:white;cursor:pointer;
+  font-size:.78rem;transition:all .2s;
+}
+.upi-app-b:hover,.upi-app-b.sel{border-color:var(--gold);background:rgba(176,125,58,.06);color:var(--roast);font-weight:500;}
+
+.cod-box{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 16px;background:rgba(45,122,79,.07);
+  border:1px solid rgba(45,122,79,.2);border-radius:4px;
+  color:#2D7A4F;font-size:.84rem;
+}
+
+.nb-select{
+  width:100%;padding:12px 16px;
+  border:1.5px solid rgba(92,50,21,.13);border-radius:3px;
+  font-family:'Jost',sans-serif;font-size:.9rem;
+  outline:none;background:white;color:var(--ink);
+  transition:border-color .2s;
+}
+.nb-select:focus{border-color:var(--gold);}
+
+.place-order-btn{
+  width:100%;padding:15px;background:var(--gold);color:white;
+  border:none;border-radius:3px;margin-top:18px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:.95rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;
+}
+.place-order-btn:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(176,125,58,.3);}
+.secure-row{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.7rem;color:var(--muted);margin-top:10px;}
+
+/* THANK YOU */
+#s-thankyou{background:var(--ink);}
+.ty-wrap{
+  flex:1;margin-top:72px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 32px;text-align:center;position:relative;overflow:hidden;
+}
+.ty-wrap::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 40%,rgba(176,125,58,.1) 0%,transparent 65%);
+}
+.ty-confetti-layer{position:absolute;inset:0;pointer-events:none;}
+.ty-dot{position:absolute;border-radius:50%;animation:tyfall linear infinite;}
+@keyframes tyfall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+.ty-check{
+  width:78px;height:78px;border-radius:50%;
+  background:rgba(45,122,79,.15);border:2px solid rgba(45,122,79,.35);
+  display:flex;align-items:center;justify-content:center;font-size:2.1rem;
+  margin-bottom:24px;position:relative;z-index:1;
+  animation:popin .6s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popin{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+.ty-kicker{font-size:.68rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1;}
+.ty-h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.2rem,5vw,4rem);color:var(--parch);
+  line-height:1.1;margin-bottom:12px;position:relative;z-index:1;
+}
+.ty-h1 em{font-style:italic;color:var(--gold2);}
+.ty-desc{color:var(--muted);font-size:.95rem;line-height:1.75;max-width:500px;margin-bottom:40px;position:relative;z-index:1;}
+
+.ty-receipt{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(176,125,58,.18);
+  border-radius:8px;padding:28px 48px;margin-bottom:36px;
+  position:relative;z-index:1;min-width:340px;
+}
+.ty-lbl{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.ty-val{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--gold);margin-bottom:14px;}
+.ty-hdash{height:1px;background:none;border:none;border-top:1px dashed rgba(255,255,255,.1);margin:14px 0;}
+.ty-metas{display:flex;justify-content:space-between;gap:24px;}
+.ty-meta-blk{text-align:center;}
+.ty-meta-lbl{font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.ty-meta-val{color:var(--parch);font-size:.88rem;font-weight:500;}
+.ty-meta-val.gd{color:var(--gold);}
+
+.ty-actions{display:flex;gap:12px;position:relative;z-index:1;}
+.ty-btn-p{
+  background:var(--gold);color:white;border:none;
+  padding:13px 28px;border-radius:3px;
+  font-family:'Jost',sans-serif;font-weight:600;
+  font-size:.88rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;
+}
+.ty-btn-p:hover{background:var(--gold2);}
+.ty-btn-o{
+  background:transparent;color:rgba(255,255,255,.65);
+  border:1px solid rgba(255,255,255,.18);padding:13px 28px;border-radius:3px;
+  font-family:'Jost',sans-serif;font-size:.88rem;cursor:pointer;transition:all .2s;
+}
+.ty-btn-o:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ══════════════════════════════════════
+   GLOBAL UI
+══════════════════════════════════════ */
+.toast-dock{position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast-msg{
+  background:var(--espresso);color:var(--parch);
+  padding:12px 20px;border-radius:4px;
+  border-left:3px solid var(--gold);font-size:.86rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+  animation:tIn .3s ease;
+}
+.toast-msg.green{border-left-color:#2D7A4F;}
+.toast-msg.bye{animation:tOut .3s ease forwards;}
+@keyframes tIn{from{transform:translateX(70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes tOut{to{transform:translateX(70px);opacity:0}}
+
+.loader{
+  position:fixed;inset:0;background:rgba(12,8,4,.88);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;z-index:9900;
+}
+.loader.on{display:flex;}
+.loader-cup{font-size:3rem;animation:loadpulse 1s ease-in-out infinite;}
+@keyframes loadpulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.15);opacity:1}}
+.loader-txt{color:var(--gold);font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;margin-top:14px;}
+
+/* addr toggle */
+.addr-wrap{display:none;}
+.addr-wrap.show{display:block;}
+
+/* spin */
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .story-section,.visit-section,.footer-top{grid-template-columns:1fr;gap:48px;}
+  .exp-grid{grid-template-columns:1fr 1fr;}
+  .menu-screen-wrap{grid-template-columns:1fr;}
+  .mini-cart{display:none;}
+  .flow-body,.cart-screen-layout,.checkout-body-grid{grid-template-columns:1fr;}
+  .sidebar-card,.s-sidebar{position:static;}
+  .pay-grid{grid-template-columns:1fr 1fr;}
+  .story-visual{display:none;}
+  .navbar{padding:0 24px;}
+  .nav-links{display:none;}
+  .hero-content{padding:120px 24px 60px;}
+  .menu-preview,.story-section,.experience-section,.visit-section{padding:72px 28px;}
+  .site-footer{padding:48px 28px 32px;}
+  .footer-top{grid-template-columns:1fr;}
+  .flow-body{padding:32px 20px;}
+  .cart-screen-layout{padding:32px 20px;}
+  .auth-layout{grid-template-columns:1fr;}
+  .auth-left{display:none;}
+  .auth-right{padding:48px 28px;}
+  .ty-receipt{min-width:auto;padding:24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOADER ════════ -->
+<div class="loader" id="loader">
+  <div class="loader-cup">☕</div>
+  <div class="loader-txt" id="loader-txt">Brewing…</div>
+</div>
+
+<!-- ════════ TOASTS ════════ -->
+<div class="toast-dock" id="toasts"></div>
+
+<!-- ════════════════════════════════════════════
+     NAVBAR (always visible)
+════════════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-brand" onclick="goHome()">Sitara <em>Coffee</em></div>
+  <ul class="nav-links" id="nav-links-landing">
+    <li><a onclick="scrollTo('story')">Story</a></li>
+    <li><a onclick="scrollTo('menu-section')">Menu</a></li>
+    <li><a onclick="scrollTo('experience')">Experience</a></li>
+    <li><a onclick="scrollTo('visit')">Visit</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="nav-reserve" onclick="scrollTo('visit')">Reserve a Table</button>
+    <button class="nav-cart-btn" id="nav-cart-btn" onclick="goCart()" style="display:none">
+      🛒<div class="cart-pip" id="cart-pip">0</div>
+    </button>
+    <div class="nav-user-chip" id="nav-user-chip" style="display:none">
+      <div class="user-av" id="nav-av">P</div>
+      <span class="user-nm" id="nav-nm">Priya</span>
+    </div>
+    <button class="nav-reserve" onclick="goTo('s-login')" id="nav-signin-btn">Sign In</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: HOME (Landing Page)
+══════════════════════════════════════════════ -->
+<div class="screen active" id="s-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-est">Est. 2018 · Chennai, India</div>
+      <h1 class="hero-h1">Where Every Cup<br><em>Tells a Story</em></h1>
+      <p class="hero-tagline">Hand-crafted coffees rooted in South Indian tradition, elevated with artisanal precision. A sanctuary for those who taste the difference.</p>
+      <div class="hero-actions">
+        <button class="btn-gold" onclick="goToMenu()">Explore Our Menu</button>
+        <button class="btn-outline-w" onclick="scrollTo('story')">Our Story</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="ticker-track">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- STORY -->
+  <section class="story-section" id="story">
+    <div>
+      <div class="story-label">Our Story</div>
+      <h2 class="story-h2">Born from a <em>Passion</em> for<br>Perfect Coffee</h2>
+      <p class="story-body">Sitara Coffee was born in Chennai with one belief — that great coffee is a ritual, not just a drink. We source single-origin beans from the misty Nilgiris and Coorg hills, roasted in small batches to honour every note.</p>
+      <p class="story-body">From the first sip of our signature filter kaapi to the last drop of a hand-pulled espresso, every cup is a journey through terroir, craft and care.</p>
+      <div class="story-stats">
+        <div><div class="stat-num">12+</div><div class="stat-lbl">Coffee Origins</div></div>
+        <div><div class="stat-num">500+</div><div class="stat-lbl">Daily Cups</div></div>
+        <div><div class="stat-num">4.9★</div><div class="stat-lbl">Guest Rating</div></div>
+        <div><div class="stat-num">6+</div><div class="stat-lbl">Years</div></div>
+      </div>
+    </div>
+    <div class="story-visual">
+      <div class="story-img-grid">
+        <div class="story-tile" style="background:linear-gradient(135deg,#3B1F0A,#5C3215)">☕</div>
+        <div class="story-tile" style="background:linear-gradient(135deg,#1A0F05,#3B1F0A)">🌿</div>
+        <div class="story-tile" style="background:linear-gradient(135deg,#2E1A0A,#4A2510)">🫘</div>
+      </div>
+      <div class="story-badge">
+        <span>6+</span>
+        <small>Years</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU PREVIEW -->
+  <section class="menu-preview" id="menu-section">
+    <div class="section-header">
+      <div class="label">Our Menu</div>
+      <h2>Crafted with <em>Intention</em></h2>
+      <p>Every item on our menu is a deliberate expression of flavour and tradition.</p>
+    </div>
+    <div class="preview-categories">
+      <button class="cat-pill on" onclick="filterPreview('all',this)">All Items</button>
+      <button class="cat-pill" onclick="filterPreview('hot',this)">Hot Drinks ☕</button>
+      <button class="cat-pill" onclick="filterPreview('cold',this)">Cold Drinks 🧊</button>
+      <button class="cat-pill" onclick="filterPreview('food',this)">Food & Pastries 🍽</button>
+    </div>
+    <div class="menu-cards" id="preview-grid"></div>
+    <div class="menu-cta">
+      <button class="btn-gold" onclick="goToMenu()">Order Now — Full Menu →</button>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="experience-section" id="experience">
+    <div class="section-header">
+      <div class="label" style="color:var(--gold);">The Experience</div>
+      <h2 style="color:var(--ink);">More Than Just <em>Coffee</em></h2>
+      <p style="color:var(--muted);">We've designed every corner of Sitara to be a sanctuary for the senses.</p>
+    </div>
+    <div class="exp-grid">
+      <div class="exp-tile" data-num="01">
+        <div class="exp-icon">🫘</div>
+        <div class="exp-title">Single Origin <em>Beans</em></div>
+        <p class="exp-body">We work directly with estate farmers in the Nilgiris and Coorg. Each batch is traceable to its farm, elevation, and harvest season.</p>
+      </div>
+      <div class="exp-tile" data-num="02">
+        <div class="exp-icon">🔥</div>
+        <div class="exp-title"><em>Live</em> Roasting</div>
+        <p class="exp-body">Watch our roasters at work every morning. Small-batch roasting ensures peak freshness — no bean sits longer than 7 days.</p>
+      </div>
+      <div class="exp-tile" data-num="03">
+        <div class="exp-icon">🍵</div>
+        <div class="exp-title">South Indian <em>Kaapi</em></div>
+        <p class="exp-body">Our filter kaapi is brewed with a custom chicory blend, pulled through a traditional dabara set. Authentic. Irreplaceable.</p>
+      </div>
+      <div class="exp-tile" data-num="04">
+        <div class="exp-icon">🧊</div>
+        <div class="exp-title"><em>Cold Brew</em> Lab</div>
+        <p class="exp-body">18-hour cold steeped in purified water. No heat. No shortcuts. Just the pure, sweet essence of the bean — served over hand-cut ice.</p>
+      </div>
+      <div class="exp-tile" data-num="05">
+        <div class="exp-icon">🥐</div>
+        <div class="exp-title">Artisan <em>Pastries</em></div>
+        <p class="exp-body">Our kitchen wakes before dawn. Every croissant, cake, and toast is made in-house, from local ingredients, paired for your cup.</p>
+      </div>
+      <div class="exp-tile" data-num="06">
+        <div class="exp-icon">🎶</div>
+        <div class="exp-title">The <em>Atmosphere</em></div>
+        <p class="exp-body">Curated jazz, ambient lighting, and slow-paced service. Sitara is built for lingering — bring a book, bring a friend, stay a while.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISIT / RESERVE -->
+  <section class="visit-section" id="visit">
+    <div class="visit-info">
+      <div class="label">Find Us</div>
+      <h2>Come <em>Visit</em> Us</h2>
+      <div class="visit-details">
+        <div class="visit-row">
+          <div class="visit-row-icon">📍</div>
+          <div class="visit-row-text">
+            <h4>Location</h4>
+            <p>12 Bean Street, Nungambakkam<br>Chennai, Tamil Nadu 600034</p>
+          </div>
+        </div>
+        <div class="visit-row">
+          <div class="visit-row-icon">🕐</div>
+          <div class="visit-row-text">
+            <h4>Opening Hours</h4>
+            <p>Monday – Friday: 7:00 AM – 10:00 PM<br>Saturday – Sunday: 8:00 AM – 11:00 PM</p>
+          </div>
+        </div>
+        <div class="visit-row">
+          <div class="visit-row-icon">📞</div>
+          <div class="visit-row-text">
+            <h4>Contact</h4>
+            <p>+91 44 2345 6789<br>hello@sitaracoffee.in</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reserve-card">
+      <h3>Reserve a <em>Table</em></h3>
+      <p>Book your spot in advance for a guaranteed experience.</p>
+      <div class="r-row2">
+        <div class="r-group"><label>First Name</label><input type="text" placeholder="Priya" id="res-fname"></div>
+        <div class="r-group"><label>Last Name</label><input type="text" placeholder="Sharma" id="res-lname"></div>
+      </div>
+      <div class="r-group"><label>Email</label><input type="email" placeholder="priya@example.com" id="res-email"></div>
+      <div class="r-row2">
+        <div class="r-group"><label>Date</label><input type="date" id="res-date"></div>
+        <div class="r-group"><label>Time</label>
+          <select id="res-time">
+            <option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option>
+            <option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option>
+            <option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option>
+            <option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option>
+            <option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="r-group"><label>Guests</label>
+        <select id="res-guests">
+          <option>1 Guest</option><option>2 Guests</option><option>3 Guests</option>
+          <option>4 Guests</option><option>5 Guests</option><option>6+ Guests</option>
+        </select>
+      </div>
+      <button class="reserve-btn" onclick="doReserve()">Confirm Reservation</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Sitara <em>Coffee</em></div>
+        <p class="footer-tagline">A sanctuary for those<br>who taste the difference.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a onclick="scrollTo('story')">Our Story</a></li>
+          <li><a onclick="scrollTo('menu-section')">Menu</a></li>
+          <li><a onclick="scrollTo('experience')">Experience</a></li>
+          <li><a onclick="scrollTo('visit')">Visit Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Order</h4>
+        <ul>
+          <li><a onclick="goToMenu()">Order Online</a></li>
+          <li><a onclick="scrollTo('visit')">Reserve Table</a></li>
+          <li><a onclick="goTo('s-login')">My Account</a></li>
+          <li><a>Gift Cards</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Sitara Coffee, Chennai. Est. 2018.</p>
+      <p style="color:var(--muted);font-size:.72rem;">Made with ☕ &amp; care</p>
+    </div>
+  </footer>
+</div><!-- /s-home -->
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: REGISTER
+══════════════════════════════════════════════ -->
+<div class="screen auth-screen" id="s-register">
+  <div class="auth-layout" style="margin-top:72px;">
+    <div class="auth-left">
+      <div class="auth-cup">☕</div>
+      <div class="auth-left-quote">Your journey to the<br><em>perfect cup</em> starts here</div>
+      <div class="auth-left-sub">Join Chennai's favourite coffee community.<br>Every sip earns you more.</div>
+      <div class="auth-perks">
+        <div class="auth-perk"><div class="auth-perk-icon">🎁</div><div class="auth-perk-text">Free drink on your first order</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">⭐</div><div class="auth-perk-text">Earn loyalty stars with every cup</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">🚀</div><div class="auth-perk-text">Priority brewing for members</div></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-form-box">
+        <h2>Create your <em>Account</em></h2>
+        <p class="sub">It only takes a minute. No spam, ever.</p>
+        <button class="google-btn" onclick="handleGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 7.5V10.5H13.48C13.25 11.7 12.1 13.5 9 13.5C6.35 13.5 4.2 11.32 4.2 9C4.2 6.68 6.35 4.5 9 4.5C10.48 4.5 11.5 5.1 12.07 5.62L14.22 3.55C12.92 2.35 11.12 1.5 9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.32 16.5 16.2 13.5 16.2 9.15C16.2 8.58 16.14 8.16 16.05 7.5H9Z" fill="#4285F4"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider"><span>or register with email</span></div>
+        <div class="f-row">
+          <div class="f-group"><label>First Name</label><input type="text" id="r-fn" placeholder="Priya" oninput="clearFErr(this)"><div class="f-err" id="ferr-r-fn">Required</div></div>
+          <div class="f-group"><label>Last Name</label><input type="text" id="r-ln" placeholder="Sharma" oninput="clearFErr(this)"><div class="f-err" id="ferr-r-ln">Required</div></div>
+        </div>
+        <div class="f-group"><label>Email Address</label><input type="email" id="r-em" placeholder="priya@example.com" oninput="clearFErr(this)"><div class="f-err" id="ferr-r-em">Valid email required</div></div>
+        <div class="f-group"><label>Phone</label><input type="tel" id="r-ph" placeholder="+91 98765 43210" oninput="clearFErr(this)"><div class="f-err" id="ferr-r-ph">Valid number required</div></div>
+        <div class="f-group"><label>Password</label>
+          <div class="pw-row"><input type="password" id="r-pw" placeholder="Create a strong password" oninput="pwStrength(this.value);clearFErr(this)"><button class="pw-eye" onclick="togglePw('r-pw',this)">👁</button></div>
+          <div class="strength-track"><div class="strength-seg" id="s1"></div><div class="strength-seg" id="s2"></div><div class="strength-seg" id="s3"></div><div class="strength-seg" id="s4"></div></div>
+          <div class="f-err" id="ferr-r-pw">Min 6 characters</div>
+        </div>
+        <div class="f-group"><label>Confirm Password</label>
+          <div class="pw-row"><input type="password" id="r-pw2" placeholder="Repeat password" oninput="clearFErr(this)"><button class="pw-eye" onclick="togglePw('r-pw2',this)">👁</button></div>
+          <div class="f-err" id="ferr-r-pw2">Passwords do not match</div>
+        </div>
+        <button class="submit-btn" onclick="doRegister()">Create Account →</button>
+        <div class="auth-sw">Already have an account? <a onclick="goTo('s-login')">Sign in here</a></div>
+        <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;">By registering you agree to our <span style="color:var(--gold);cursor:pointer;">Terms</span> &amp; <span style="color:var(--gold);cursor:pointer;">Privacy Policy</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: LOGIN
+══════════════════════════════════════════════ -->
+<div class="screen auth-screen" id="s-login">
+  <div class="auth-layout" style="margin-top:72px;">
+    <div class="auth-left">
+      <div class="auth-cup">☕</div>
+      <div class="auth-left-quote">"Life begins <em>after coffee</em>"</div>
+      <div class="auth-left-sub">Welcome back. Your perfect brew is waiting.</div>
+      <div class="auth-perks">
+        <div class="auth-perk"><div class="auth-perk-icon">📦</div><div class="auth-perk-text">Track your orders in real-time</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">💳</div><div class="auth-perk-text">Saved payment methods</div></div>
+        <div class="auth-perk"><div class="auth-perk-icon">🏆</div><div class="auth-perk-text">View loyalty rewards &amp; history</div></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-form-box">
+        <h2>Welcome <em>Back</em></h2>
+        <p class="sub">Sign in to continue to your account.</p>
+        <button class="google-btn" onclick="handleGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 7.5V10.5H13.48C13.25 11.7 12.1 13.5 9 13.5C6.35 13.5 4.2 11.32 4.2 9C4.2 6.68 6.35 4.5 9 4.5C10.48 4.5 11.5 5.1 12.07 5.62L14.22 3.55C12.92 2.35 11.12 1.5 9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.32 16.5 16.2 13.5 16.2 9.15C16.2 8.58 16.14 8.16 16.05 7.5H9Z" fill="#4285F4"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider"><span>or sign in with email</span></div>
+        <div class="f-group"><label>Email Address</label><input type="email" id="l-em" placeholder="priya@example.com" oninput="clearFErr(this)"><div class="f-err" id="ferr-l-em">Enter your email</div></div>
+        <div class="f-group"><label>Password</label>
+          <div class="pw-row"><input type="password" id="l-pw" placeholder="••••••••" oninput="clearFErr(this)"><button class="pw-eye" onclick="togglePw('l-pw',this)">👁</button></div>
+          <div class="f-err" id="ferr-l-pw">Enter your password</div>
+        </div>
+        <div style="text-align:right;margin-top:-8px;margin-bottom:16px;"><a style="font-size:.78rem;color:var(--roast);cursor:pointer;" onclick="toast('Password reset link sent!','green')">Forgot password?</a></div>
+        <button class="submit-btn" onclick="doLogin()">Sign In →</button>
+        <div class="auth-sw">Don't have an account? <a onclick="goTo('s-register')">Create one free</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: MENU (Order Flow)
+══════════════════════════════════════════════ -->
+<div class="screen flow-screen" id="s-menu">
+  <div class="menu-screen-wrap" style="margin-top:72px;">
+    <div class="menu-main">
+      <h2>Our <em>Menu</em></h2>
+      <p class="sub">Add items to your cart — tap + to order</p>
+      <div class="menu-filters-row">
+        <button class="mf-pill on" onclick="filterOrderMenu('all',this)">All Items</button>
+        <button class="mf-pill" onclick="filterOrderMenu('hot',this)">Hot ☕</button>
+        <button class="mf-pill" onclick="filterOrderMenu('cold',this)">Cold 🧊</button>
+        <button class="mf-pill" onclick="filterOrderMenu('food',this)">Food 🍽</button>
+      </div>
+      <div class="menu-items-grid" id="order-menu-grid"></div>
+    </div>
+    <div class="mini-cart">
+      <div class="mc-title">Your Cart</div>
+      <div class="mc-empty-state" id="mc-empty"><div class="icon">🛒</div><p>Nothing added yet.<br>Pick something delicious!</p></div>
+      <div class="mc-list" id="mc-list" style="display:none"></div>
+      <div class="mc-footer" id="mc-footer" style="display:none">
+        <div class="mc-sub-row"><span>Subtotal</span><span id="mc-sub">₹0</span></div>
+        <div class="mc-sub-row"><span>Tax (5%)</span><span id="mc-tax">₹0</span></div>
+        <div class="mc-total-row"><span>Total</span><span id="mc-ttl">₹0</span></div>
+        <button class="mc-checkout-btn" onclick="goCart()">View Cart &amp; Checkout →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CART
+══════════════════════════════════════════════ -->
+<div class="screen flow-screen" id="s-cart">
+  <div class="flow-header" style="margin-top:72px;">
+    <div class="steps-row">
+      <div class="step-item done"><div class="step-circle">1</div>&nbsp;Menu</div>
+      <div class="step-dash"></div>
+      <div class="step-item active"><div class="step-circle">2</div>&nbsp;Cart</div>
+      <div class="step-dash"></div>
+      <div class="step-item"><div class="step-circle">3</div>&nbsp;Checkout</div>
+      <div class="step-dash"></div>
+      <div class="step-item"><div class="step-circle">4</div>&nbsp;Confirmed</div>
+    </div>
+  </div>
+  <div class="cart-screen-layout">
+    <div id="cart-left">
+      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:20px;">Your <em style="font-style:italic;color:var(--gold)">Cart</em></h2>
+      <div id="cart-items-list"></div>
+      <div class="promo-row">
+        <input class="promo-input" type="text" id="promo-inp" placeholder="Promo code (try SITARA10)">
+        <button class="promo-apply-btn" onclick="applyPromo()">Apply</button>
+      </div>
+      <div class="promo-result" id="promo-result"></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Order Summary</h3>
+      <div id="cart-summary-lines"></div>
+      <div class="s-div"></div>
+      <div class="s-line"><span>Subtotal</span><span id="cs-sub">₹0</span></div>
+      <div class="s-line"><span>Tax (5%)</span><span id="cs-tax">₹0</span></div>
+      <div class="s-line"><span>Packaging</span><span id="cs-pack">₹10</span></div>
+      <div class="s-line s-discount" id="cs-disc-row" style="display:none;color:#2D7A4F"><span>Promo</span><span id="cs-disc-val"></span></div>
+      <div class="s-div"></div>
+      <div class="s-total"><span>Total</span><span id="cs-total">₹0</span></div>
+      <button class="proceed-btn" id="proceed-btn" onclick="goTo('s-checkout')" disabled>Proceed to Checkout →</button>
+      <a class="back-a" onclick="goTo('s-menu')">← Continue Shopping</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CHECKOUT
+══════════════════════════════════════════════ -->
+<div class="screen flow-screen" id="s-checkout">
+  <div class="flow-header" style="margin-top:72px;">
+    <div class="steps-row">
+      <div class="step-item done"><div class="step-circle">1</div>&nbsp;Menu</div>
+      <div class="step-dash"></div>
+      <div class="step-item done"><div class="step-circle">2</div>&nbsp;Cart</div>
+      <div class="step-dash"></div>
+      <div class="step-item active"><div class="step-circle">3</div>&nbsp;Checkout</div>
+      <div class="step-dash"></div>
+      <div class="step-item"><div class="step-circle">4</div>&nbsp;Confirmed</div>
+    </div>
+  </div>
+  <div class="flow-body checkout-body-grid" style="display:grid;grid-template-columns:1fr 380px;gap:32px;padding:48px 56px;max-width:1200px;margin:0 auto;width:100%;">
+    <div class="flow-left">
+      <h2>Checkout</h2>
+      <p class="sub">Fill in your details and choose how to pay.</p>
+
+      <div class="sec-lbl">Contact & Delivery</div>
+      <div class="f-row">
+        <div class="f-group"><label>First Name</label><input type="text" id="co-fn" placeholder="Priya"></div>
+        <div class="f-group"><label>Last Name</label><input type="text" id="co-ln" placeholder="Sharma"></div>
+      </div>
+      <div class="f-group"><label>Phone</label><input type="tel" id="co-ph" placeholder="+91 98765 43210"><div class="f-err" id="ferr-co-ph">Required</div></div>
+      <div class="f-group"><label>Order Type</label>
+        <select id="co-type" onchange="toggleAddr()" style="width:100%;padding:12px 16px;border:1.5px solid rgba(92,50,21,.13);border-radius:3px;font-size:.9rem;outline:none;background:white;color:var(--ink);transition:border-color .2s;">
+          <option value="dine">Dine In</option>
+          <option value="takeaway">Takeaway</option>
+          <option value="delivery">Home Delivery</option>
+        </select>
+      </div>
+      <div class="addr-wrap f-group" id="addr-wrap">
+        <label>Delivery Address</label>
+        <textarea id="co-addr" placeholder="House No, Street, Area, City, PIN" style="width:100%;padding:12px 16px;border:1.5px solid rgba(92,50,21,.13);border-radius:3px;font-size:.9rem;resize:vertical;min-height:88px;outline:none;background:white;color:var(--ink);"></textarea>
+        <div class="f-err" id="ferr-co-addr">Please enter your address</div>
+      </div>
+      <div class="f-group"><label>Special Instructions <span style="color:var(--muted);font-size:.68rem">(optional)</span></label><input type="text" id="co-note" placeholder="No sugar, extra hot, less milk…"></div>
+
+      <div class="sec-lbl">Payment Method</div>
+      <div class="pay-grid">
+        <div class="pay-opt"><input type="radio" name="pay" id="pay-card" value="card"><label class="pay-lbl" for="pay-card"><span class="pay-icon">💳</span><span class="pay-name">Card</span><span class="pay-sub">Debit/Credit</span></label></div>
+        <div class="pay-opt"><input type="radio" name="pay" id="pay-upi" value="upi"><label class="pay-lbl" for="pay-upi"><span class="pay-icon">📱</span><span class="pay-name">UPI</span><span class="pay-sub">GPay, PhonePe…</span></label></div>
+        <div class="pay-opt"><input type="radio" name="pay" id="pay-nb" value="netbanking"><label class="pay-lbl" for="pay-nb"><span class="pay-icon">🏦</span><span class="pay-name">Net Bank</span><span class="pay-sub">Online transfer</span></label></div>
+        <div class="pay-opt"><input type="radio" name="pay" id="pay-cod" value="cod"><label class="pay-lbl" for="pay-cod"><span class="pay-icon">💵</span><span class="pay-name">Cash</span><span class="pay-sub">Pay at counter</span></label></div>
+      </div>
+
+      <!-- Card -->
+      <div class="pay-panel" id="panel-card">
+        <div class="f-group"><label>Cardholder Name</label><input type="text" id="card-name" placeholder="Name exactly as on card"></div>
+        <div class="f-group card-num-wrap"><label>Card Number</label><input type="text" id="card-num" placeholder="1234  5678  9012  3456" maxlength="19" oninput="fmtCard(this)"><span class="card-brand-ic" id="card-brand">💳</span></div>
+        <div class="card-3">
+          <div class="f-group"><label>Expiry</label><input type="text" id="card-exp" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"></div>
+          <div class="f-group"><label>CVV</label><input type="password" id="card-cvv" placeholder="•••" maxlength="3"></div>
+          <div class="f-group"><label>PIN/ZIP</label><input type="text" placeholder="500001" maxlength="6"></div>
+        </div>
+      </div>
+      <!-- UPI -->
+      <div class="pay-panel" id="panel-upi">
+        <div class="f-group"><label>UPI ID</label><input type="text" id="upi-id" placeholder="yourname@upi"></div>
+        <p style="font-size:.75rem;color:var(--muted);margin-top:-8px;margin-bottom:10px;">Or pay directly with your app:</p>
+        <div class="upi-apps">
+          <button class="upi-app-b" onclick="selUpi(this)">📱 GPay</button>
+          <button class="upi-app-b" onclick="selUpi(this)">🟣 PhonePe</button>
+          <button class="upi-app-b" onclick="selUpi(this)">🔵 Paytm</button>
+          <button class="upi-app-b" onclick="selUpi(this)">🏦 BHIM</button>
+          <button class="upi-app-b" onclick="selUpi(this)">🟠 Amazon Pay</button>
+        </div>
+      </div>
+      <!-- Net Banking -->
+      <div class="pay-panel" id="panel-netbanking">
+        <div class="f-group"><label>Select Bank</label>
+          <select class="nb-select">
+            <option>State Bank of India</option><option>HDFC Bank</option>
+            <option>ICICI Bank</option><option>Axis Bank</option>
+            <option>Kotak Mahindra Bank</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <!-- COD -->
+      <div class="pay-panel" id="panel-cod">
+        <div class="cod-box">✅ &nbsp; You'll pay <strong id="cod-total">₹0</strong> in cash. Please keep exact change.</div>
+      </div>
+    </div>
+
+    <!-- Checkout Summary -->
+    <div class="sidebar-card" style="position:sticky;top:88px;">
+      <h3>Order Summary</h3>
+      <div id="co-review-items"></div>
+      <div class="s-div"></div>
+      <div class="s-line"><span>Subtotal</span><span id="co2-sub">₹0</span></div>
+      <div class="s-line"><span>Tax (5%)</span><span id="co2-tax">₹0</span></div>
+      <div class="s-line"><span>Packaging</span><span id="co2-pack">₹10</span></div>
+      <div class="s-line s-discount" id="co2-disc-row" style="display:none;color:#2D7A4F"><span>Promo</span><span id="co2-disc-val"></span></div>
+      <div class="s-div"></div>
+      <div class="s-total"><span>Total</span><span id="co2-total">₹0</span></div>
+      <button class="place-order-btn" onclick="placeOrder()">Place Order →</button>
+      <div class="secure-row">🔒 Secured &amp; encrypted payment</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: THANK YOU
+══════════════════════════════════════════════ -->
+<div class="screen" id="s-thankyou">
+  <div class="ty-wrap">
+    <div class="ty-confetti-layer" id="ty-confetti"></div>
+    <div class="ty-check">✅</div>
+    <div class="ty-kicker">★ &nbsp; Order Confirmed &nbsp; ★</div>
+    <h1 class="ty-h1">Thank You,<br><em id="ty-fn">Priya!</em></h1>
+    <p class="ty-desc">Your order is confirmed and our baristas are already brewing it with love and craft. You'll be notified when it's ready.</p>
+    <div class="ty-receipt">
+      <div class="ty-lbl">Order Number</div>
+      <div class="ty-val" id="ty-order-id">#SC-00000</div>
+      <hr class="ty-hdash">
+      <div class="ty-metas">
+        <div class="ty-meta-blk"><div class="ty-meta-lbl">Amount</div><div class="ty-meta-val gd" id="ty-amount">₹0</div></div>
+        <div class="ty-meta-blk"><div class="ty-meta-lbl">Payment</div><div class="ty-meta-val" id="ty-pay-method">Card</div></div>
+        <div class="ty-meta-blk"><div class="ty-meta-lbl">Ready In</div><div class="ty-meta-val">15–20 min</div></div>
+      </div>
+    </div>
+    <div class="ty-actions">
+      <button class="ty-btn-p" onclick="reorder()">Order Again ☕</button>
+      <button class="ty-btn-o" onclick="goHome()">Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     JS
+══════════════════════════════════════════════ -->
+<script>
+// ─── DATA ───────────────────────────────────────
+const MENU = [
+  {id:1,name:'Sitara Filter Kaapi',desc:'Traditional South Indian filter coffee with chicory blend.',price:90,emoji:'☕',tag:'hot',badge:'Signature'},
+  {id:2,name:'Espresso',desc:'Bold, rich single-origin Coorg shot.',price:110,emoji:'🍵',tag:'hot',badge:null},
+  {id:3,name:'Cappuccino',desc:'Espresso, steamed milk, velvety micro-foam.',price:150,emoji:'☕',tag:'hot',badge:null},
+  {id:4,name:'Flat White',desc:'Silky ristretto with smooth micro-foam.',price:160,emoji:'🫧',tag:'hot',badge:null},
+  {id:5,name:'Masala Chai Latte',desc:'House-spiced chai with oat milk foam.',price:130,emoji:'🍵',tag:'hot',badge:'New'},
+  {id:6,name:'Pour Over',desc:'Hand-poured Nilgiris single origin, V60 style.',price:180,emoji:'☕',tag:'hot',badge:'Specialty'},
+  {id:7,name:'Cold Brew',desc:'18-hour steeped. Naturally sweet, zero bitterness.',price:160,emoji:'🧊',tag:'cold',badge:null},
+  {id:8,name:'Iced Caramel Latte',desc:'Espresso over ice with house-made caramel.',price:190,emoji:'🥤',tag:'cold',badge:null},
+  {id:9,name:'Mango Cold Foam',desc:'Cold brew with whipped mango cold foam.',price:200,emoji:'🥭',tag:'cold',badge:'Seasonal'},
+  {id:10,name:'Strawberry Matcha',desc:'Ceremonial matcha layered with strawberry foam.',price:210,emoji:'🍵',tag:'cold',badge:null},
+  {id:11,name:'Almond Croissant',desc:'Buttery, flaky, almond cream filled. Baked fresh.',price:120,emoji:'🥐',tag:'food',badge:null},
+  {id:12,name:'Avocado Toast',desc:'Sourdough, avocado, tomatoes, microgreens.',price:180,emoji:'🥑',tag:'food',badge:null},
+  {id:13,name:'Banana Walnut Cake',desc:'Moist cake with cream cheese frosting.',price:140,emoji:'🍰',tag:'food',badge:"Chef's Pick"},
+  {id:14,name:'Egg & Pesto Brioche',desc:'Scrambled eggs, cheese, pesto on brioche.',price:160,emoji:'🥪',tag:'food',badge:null},
+  {id:15,name:'South Indian Tiffin',desc:'Idli, vada, sambar and 3 chutneys.',price:150,emoji:'🍽',tag:'food',badge:'Heritage'},
+];
+
+const PROMOS = {
+  'SITARA10': {type:'pct',val:10,lbl:'10% off'},
+  'WELCOME50': {type:'flat',val:50,lbl:'₹50 off'},
+  'KAAPI': {type:'flat',val:30,lbl:'₹30 off'},
+};
+
+const bgMap = {hot:'#FFF5EB',cold:'#EDF5FB',food:'#FFFAF2'};
+const payLabels = {card:'Credit/Debit Card',upi:'UPI',netbanking:'Net Banking',cod:'Cash on Delivery'};
+
+// ─── STATE ──────────────────────────────────────
+const S = { user:null, cart:[], promo:null, lastOrder:null };
+
+// ─── NAVBAR SCROLL ──────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('solid', window.scrollY > 30);
+});
+document.getElementById('navbar').classList.add('solid');
+
+// ─── TICKER ─────────────────────────────────────
+const tickerItems = ['Single Origin Beans','Cold Brew','Pour Over','Filter Coffee','Espresso Bar','South Indian Tiffin','Artisan Pastries','Live Roasting'];
+(function buildTicker(){
+  const track = document.getElementById('ticker-track');
+  const full = [...tickerItems,...tickerItems,...tickerItems,...tickerItems];
+  track.innerHTML = full.map(t=>`<span class="ticker-item">${t}</span>`).join('');
+})();
+
+// ─── ROUTING ────────────────────────────────────
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  updateNav(id);
+  if(id==='s-menu') { renderOrderMenu(); syncMiniCart(); }
+  if(id==='s-cart') { renderCart(); }
+  if(id==='s-checkout') { syncCheckout(); prefill(); }
+}
+
+function goHome(){
+  goTo('s-home');
+  updateNav('s-home');
+  window.scrollTo(0,0);
+}
+
+function goToMenu(){
+  if(!S.user){ goTo('s-login'); return; }
+  goTo('s-menu');
+}
+
+function goCart(){
+  goTo('s-cart');
+}
+
+function updateNav(id){
+  const isFlow = ['s-menu','s-cart','s-checkout','s-thankyou'].includes(id);
+  const isAuth = ['s-register','s-login'].includes(id);
+  const cartBtn = document.getElementById('nav-cart-btn');
+  const userChip = document.getElementById('nav-user-chip');
+  const signinBtn = document.getElementById('nav-signin-btn');
+  const navLinks = document.getElementById('nav-links-landing');
+
+  cartBtn.style.display = isFlow && S.user ? 'flex' : 'none';
+  userChip.style.display = (isFlow || id==='s-home') && S.user ? 'flex' : 'none';
+  signinBtn.style.display = (!S.user && !isFlow) ? 'flex' : 'none';
+  if(navLinks) navLinks.style.display = (id==='s-home') ? 'flex' : 'none';
+}
+
+function scrollTo(id){
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+}
+
+// ─── AUTH ────────────────────────────────────────
+function setUser(u){
+  S.user = u;
+  ['nav-av'].forEach(id=>{ const el=document.getElementById(id); if(el)el.textContent=u.initials; });
+  ['nav-nm'].forEach(id=>{ const el=document.getElementById(id); if(el)el.textContent=u.fname; });
+}
+
+function clearFErr(inp){
+  inp.classList.remove('err-inp');
+  const e=document.getElementById('ferr-'+inp.id);
+  if(e)e.classList.remove('show');
+}
+function showFErr(id,msg){
+  const inp=document.getElementById(id);
+  const e=document.getElementById('ferr-'+id);
+  if(inp)inp.classList.add('err-inp');
+  if(e){if(msg)e.textContent=msg;e.classList.add('show');}
+}
+
+function togglePw(id,btn){
+  const i=document.getElementById(id);
+  i.type=i.type==='password'?'text':'password';
+  btn.textContent=i.type==='password'?'👁':'🙈';
+}
+
+function pwStrength(pw){
+  const cols=['#B33A3A','#E67E22','#F1C40F','#2D7A4F'];
+  let sc=0;
+  if(pw.length>=6)sc++;
+  if(/[A-Z]/.test(pw))sc++;
+  if(/[0-9]/.test(pw))sc++;
+  if(/[^A-Za-z0-9]/.test(pw))sc++;
+  ['s1','s2','s3','s4'].forEach((sid,i)=>{
+    const el=document.getElementById(sid);
+    if(el)el.style.background=i<sc?cols[sc-1]:'rgba(92,50,21,.1)';
+  });
+}
+
+function doRegister(){
+  const fn=document.getElementById('r-fn').value.trim();
+  const ln=document.getElementById('r-ln').value.trim();
+  const em=document.getElementById('r-em').value.trim();
+  const ph=document.getElementById('r-ph').value.trim();
+  const pw=document.getElementById('r-pw').value;
+  const pw2=document.getElementById('r-pw2').value;
+  let ok=true;
+  if(!fn){showFErr('r-fn');ok=false;}
+  if(!ln){showFErr('r-ln');ok=false;}
+  if(!em||!/\S+@\S+\.\S+/.test(em)){showFErr('r-em','Valid email required');ok=false;}
+  if(!ph||ph.length<10){showFErr('r-ph','Valid number required');ok=false;}
+  if(pw.length<6){showFErr('r-pw','Min 6 characters');ok=false;}
+  if(pw!==pw2){showFErr('r-pw2','Passwords do not match');ok=false;}
+  if(!ok)return;
+  showLoader();
+  setTimeout(()=>{
+    setUser({fname:fn,lname:ln,email:em,phone:ph,initials:fn[0].toUpperCase()});
+    hideLoader();
+    toast(`Welcome to Sitara, ${fn}! 🎉`,'green');
+    goTo('s-menu');
+  },1200);
+}
+
+function doLogin(){
+  const em=document.getElementById('l-em').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  let ok=true;
+  if(!em){showFErr('l-em','Enter your email');ok=false;}
+  if(!pw){showFErr('l-pw','Enter your password');ok=false;}
+  if(!ok)return;
+  showLoader();
+  setTimeout(()=>{
+    const fn=em.split('@')[0];
+    const fname=fn.charAt(0).toUpperCase()+fn.slice(1);
+    setUser({fname,lname:'',email:em,phone:'',initials:fname[0].toUpperCase()});
+    hideLoader();
+    toast(`Welcome back, ${fname}! ☕`,'green');
+    goTo('s-menu');
+  },1000);
+}
+
+function handleGoogle(){
+  showLoader('Connecting…');
+  setTimeout(()=>{
+    setUser({fname:'Priya',lname:'Sharma',email:'priya@gmail.com',phone:'+91 98765 43210',initials:'P'});
+    hideLoader();
+    toast('Signed in with Google ✓','green');
+    goTo('s-menu');
+  },1000);
+}
+
+// ─── CART ────────────────────────────────────────
+function addItem(id){
+  const item=MENU.find(m=>m.id===id);
+  if(!item)return;
+  const ex=S.cart.find(c=>c.id===id);
+  if(ex)ex.qty++;
+  else S.cart.push({...item,qty:1});
+  updateCartBadge();
+  syncMiniCart();
+  toast(`${item.emoji} ${item.name} added!`);
+}
+
+function changeQty(id,d){
+  const item=S.cart.find(c=>c.id===id);
+  if(!item)return;
+  item.qty+=d;
+  if(item.qty<=0)S.cart=S.cart.filter(c=>c.id!==id);
+  updateCartBadge(); syncMiniCart(); renderCart(); syncCheckout();
+}
+
+function removeItem(id){
+  S.cart=S.cart.filter(c=>c.id!==id);
+  updateCartBadge(); syncMiniCart(); renderCart(); syncCheckout();
+}
+
+function getTotals(){
+  const sub=S.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax=Math.round(sub*.05);
+  const pack=S.cart.length>0?10:0;
+  let disc=0;
+  if(S.promo){
+    if(S.promo.type==='pct')disc=Math.round(sub*S.promo.val/100);
+    else disc=S.promo.val;
+  }
+  return{sub,tax,pack,disc,total:Math.max(0,sub+tax+pack-disc)};
+}
+
+function updateCartBadge(){
+  const n=S.cart.reduce((s,i)=>s+i.qty,0);
+  const pip=document.getElementById('cart-pip');
+  if(pip){pip.textContent=n;pip.classList.toggle('on',n>0);}
+}
+
+// ─── PREVIEW MENU (landing) ──────────────────────
+function renderPreviewMenu(tag='all'){
+  const grid=document.getElementById('preview-grid');
+  const items=tag==='all'?MENU:MENU.filter(i=>i.tag===tag);
+  grid.innerHTML=items.map(item=>`
+    <div class="menu-card">
+      <div class="mc-img" style="background:${bgMap[item.tag]}">
+        <span style="font-size:3.5rem">${item.emoji}</span>
+        ${item.badge?`<div class="mc-badge">${item.badge}</div>`:''}
+      </div>
+      <div class="mc-body">
+        <div class="mc-name">${item.name}</div>
+        <div class="mc-desc">${item.desc}</div>
+        <div class="mc-footer">
+          <div class="mc-price">₹${item.price}</div>
+          <button class="mc-add" onclick="previewAdd(${item.id},this)">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterPreview(tag,btn){
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  renderPreviewMenu(tag);
+}
+
+function previewAdd(id,btn){
+  if(!S.user){goTo('s-login');return;}
+  addItem(id);
+  btn.textContent='✓';btn.classList.add('done');
+  setTimeout(()=>{btn.textContent='+';btn.classList.remove('done');},900);
+}
+
+// ─── ORDER MENU ──────────────────────────────────
+function renderOrderMenu(tag='all'){
+  const grid=document.getElementById('order-menu-grid');
+  const items=tag==='all'?MENU:MENU.filter(i=>i.tag===tag);
+  grid.innerHTML=items.map(item=>{
+    const inCart=S.cart.find(c=>c.id===item.id);
+    return`<div class="food-card">
+      <div class="fc-img" style="background:${bgMap[item.tag]}">
+        <span>${item.emoji}</span>
+        ${item.badge?`<div class="fc-badge">${item.badge}</div>`:''}
+      </div>
+      <div class="fc-body">
+        <div class="fc-name">${item.name}</div>
+        <div class="fc-desc">${item.desc}</div>
+        <div class="fc-foot">
+          <div class="fc-price">₹${item.price}</div>
+          <button class="fc-add ${inCart?'added':''}" id="fab-${item.id}" onclick="orderAdd(${item.id})">${inCart?'✓':'+'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterOrderMenu(tag,btn){
+  document.querySelectorAll('.mf-pill').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  renderOrderMenu(tag);
+}
+
+function orderAdd(id){
+  addItem(id);
+  const btn=document.getElementById('fab-'+id);
+  if(btn){btn.textContent='✓';btn.classList.add('added');setTimeout(()=>{btn.textContent='+';btn.classList.remove('added');},800);}
+}
+
+// ─── MINI CART ───────────────────────────────────
+function syncMiniCart(){
+  const empty=document.getElementById('mc-empty');
+  const list=document.getElementById('mc-list');
+  const footer=document.getElementById('mc-footer');
+  if(!empty)return;
+  if(S.cart.length===0){
+    empty.style.display='flex';list.style.display='none';footer.style.display='none';
+    return;
+  }
+  empty.style.display='none';list.style.display='block';footer.style.display='block';
+  list.innerHTML=S.cart.map(i=>`
+    <div class="mc-row">
+      <div class="mc-em">${i.emoji}</div>
+      <div class="mc-nm">${i.name}</div>
+      <div class="mc-qc">
+        <button class="mc-qb" onclick="changeQty(${i.id},-1)">−</button>
+        <span class="mc-qn">${i.qty}</span>
+        <button class="mc-qb" onclick="changeQty(${i.id},+1)">+</button>
+      </div>
+      <div class="mc-pr">₹${i.price*i.qty}</div>
+    </div>`).join('');
+  const{sub,tax,total}=getTotals();
+  document.getElementById('mc-sub').textContent=`₹${sub}`;
+  document.getElementById('mc-tax').textContent=`₹${tax}`;
+  document.getElementById('mc-ttl').textContent=`₹${total}`;
+}
+
+// ─── CART SCREEN ─────────────────────────────────
+function renderCart(){
+  const list=document.getElementById('cart-items-list');
+  const{sub,tax,pack,disc,total}=getTotals();
+  if(S.cart.length===0){
+    list.innerHTML=`<div class="cart-empty-box"><div class="big-em">🛒</div><p>Your cart is empty</p><button class="submit-btn" style="width:auto;padding:12px 24px;" onclick="goTo('s-menu')">← Back to Menu</button></div>`;
+    document.getElementById('proceed-btn').disabled=true;
+  } else {
+    list.innerHTML=S.cart.map(i=>`
+      <div class="cart-item-row">
+        <div class="cir-em">${i.emoji}</div>
+        <div class="cir-info">
+          <div class="cir-name">${i.name}</div>
+          <div class="cir-tag">${i.tag}</div>
+          <div class="cir-unit">₹${i.price} each</div>
+        </div>
+        <div class="cir-qc">
+          <button class="cq-btn" onclick="changeQty(${i.id},-1)">−</button>
+          <span class="cq-num">${i.qty}</span>
+          <button class="cq-btn" onclick="changeQty(${i.id},+1)">+</button>
+        </div>
+        <div class="cir-price">₹${i.price*i.qty}</div>
+        <button class="cir-rm" onclick="removeItem(${i.id})">✕ Remove</button>
+      </div>`).join('');
+    document.getElementById('proceed-btn').disabled=false;
+  }
+  // summary
+  document.getElementById('cart-summary-lines').innerHTML=S.cart.map(i=>`<div class="s-item"><div class="s-item-l"><span class="s-emoji">${i.emoji}</span><div><div class="s-name">${i.name}</div><div class="s-qty">x${i.qty}</div></div></div><div class="s-price">₹${i.price*i.qty}</div></div>`).join('');
+  setT('cs-sub',`₹${sub}`);setT('cs-tax',`₹${tax}`);setT('cs-pack',`₹${pack}`);setT('cs-total',`₹${total}`);
+  const dr=document.getElementById('cs-disc-row');
+  if(disc>0){dr.style.display='flex';setT('cs-disc-val',`-₹${disc}`);}else{dr.style.display='none';}
+}
+
+function applyPromo(){
+  const code=document.getElementById('promo-inp').value.trim().toUpperCase();
+  const res=document.getElementById('promo-result');
+  const p=PROMOS[code];
+  if(!code){res.className='promo-result err';res.textContent='Enter a promo code';return;}
+  if(!p){res.className='promo-result err';res.textContent='✕ Invalid code';S.promo=null;}
+  else{S.promo=p;res.className='promo-result ok';res.textContent=`✓ Applied — ${p.lbl}`;toast(`Promo applied: ${p.lbl} 🎉`,'green');}
+  renderCart();syncCheckout();
+}
+
+// ─── CHECKOUT ────────────────────────────────────
+function syncCheckout(){
+  const{sub,tax,pack,disc,total}=getTotals();
+  const ri=document.getElementById('co-review-items');
+  if(ri)ri.innerHTML=S.cart.map(i=>`<div class="s-item"><div class="s-item-l"><span class="s-emoji">${i.emoji}</span><div><div class="s-name">${i.name}</div><div class="s-qty">x${i.qty}</div></div></div><div class="s-price">₹${i.price*i.qty}</div></div>`).join('');
+  setT('co2-sub',`₹${sub}`);setT('co2-tax',`₹${tax}`);setT('co2-pack',`₹${pack}`);setT('co2-total',`₹${total}`);setT('cod-total',`₹${total}`);
+  const dr=document.getElementById('co2-disc-row');
+  if(dr){if(disc>0){dr.style.display='flex';setT('co2-disc-val',`-₹${disc}`);}else dr.style.display='none';}
+}
+
+function prefill(){
+  if(!S.user)return;
+  const fn=document.getElementById('co-fn');
+  const ln=document.getElementById('co-ln');
+  const ph=document.getElementById('co-ph');
+  if(fn&&!fn.value)fn.value=S.user.fname;
+  if(ln&&!ln.value)ln.value=S.user.lname;
+  if(ph&&!ph.value)ph.value=S.user.phone||'';
+}
+
+function toggleAddr(){
+  const t=document.getElementById('co-type').value;
+  document.getElementById('addr-wrap').classList.toggle('show',t==='delivery');
+}
+
+document.querySelectorAll('input[name="pay"]').forEach(r=>{
+  r.addEventListener('change',()=>{
+    document.querySelectorAll('.pay-panel').forEach(p=>p.classList.remove('show'));
+    const panel=document.getElementById('panel-'+r.value);
+    if(panel)panel.classList.add('show');
+    syncCheckout();
+  });
+});
+
+function selUpi(btn){
+  document.querySelectorAll('.upi-app-b').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function fmtCard(inp){
+  let v=inp.value.replace(/\D/g,'').substring(0,16);
+  v=v.replace(/(.{4})/g,'$1  ').trim();
+  inp.value=v;
+}
+function fmtExp(inp){
+  let v=inp.value.replace(/\D/g,'').substring(0,4);
+  if(v.length>2)v=v.substring(0,2)+' / '+v.substring(2);
+  inp.value=v;
+}
+
+// ─── PLACE ORDER ─────────────────────────────────
+function placeOrder(){
+  const phone=document.getElementById('co-ph')?.value?.trim();
+  const type=document.getElementById('co-type')?.value;
+  const payEl=document.querySelector('input[name="pay"]:checked');
+  if(!phone){showFErr('co-ph','Required');return;}
+  if(type==='delivery'){
+    const addr=document.getElementById('co-addr')?.value?.trim();
+    if(!addr){showFErr('co-addr','Please enter your address');return;}
+  }
+  if(!payEl){toast('⚠ Select a payment method');return;}
+  if(S.cart.length===0){toast('⚠ Cart is empty');return;}
+  if(payEl.value==='card'){
+    const num=document.getElementById('card-num')?.value?.replace(/\s/g,'');
+    if(!num||num.length<16){toast('⚠ Valid 16-digit card number required');return;}
+    const cvv=document.getElementById('card-cvv')?.value;
+    if(!cvv||cvv.length<3){toast('⚠ Enter CVV');return;}
+    const exp=document.getElementById('card-exp')?.value;
+    if(!exp||exp.length<4){toast('⚠ Enter expiry date');return;}
+  }
+  if(payEl.value==='upi'){
+    const uid=document.getElementById('upi-id')?.value?.trim();
+    const app=document.querySelector('.upi-app-b.sel');
+    if(!uid&&!app){toast('⚠ Enter UPI ID or select an app');return;}
+  }
+  showLoader('Processing your order…');
+  const{total}=getTotals();
+  const orderId='#SC-'+Math.floor(Math.random()*90000+10000);
+  setTimeout(()=>{
+    S.lastOrder={id:orderId,total,payment:payLabels[payEl.value],items:[...S.cart]};
+    S.cart=[];S.promo=null;
+    updateCartBadge();syncMiniCart();
+    setT('ty-order-id',orderId);
+    setT('ty-amount',`₹${total}`);
+    setT('ty-pay-method',payLabels[payEl.value]);
+    setT('ty-fn',(S.user?.fname||'Guest')+'!');
+    document.getElementById('nav-av') && (document.getElementById('nav-av').textContent=S.user?.initials||'P');
+    document.getElementById('nav-nm') && (document.getElementById('nav-nm').textContent=S.user?.fname||'');
+    hideLoader();
+    goTo('s-thankyou');
+    launchConfetti();
+  },1800);
+}
+
+function reorder(){
+  if(S.lastOrder){S.cart=S.lastOrder.items.map(i=>({...i}));updateCartBadge();}
+  goTo('s-menu');
+}
+
+// ─── RESERVE ─────────────────────────────────────
+function doReserve(){
+  const fn=document.getElementById('res-fname').value.trim();
+  const em=document.getElementById('res-email').value.trim();
+  const dt=document.getElementById('res-date').value;
+  if(!fn||!em||!dt){toast('⚠ Please fill in all fields');return;}
+  showLoader('Securing your table…');
+  setTimeout(()=>{
+    hideLoader();
+    toast(`Table reserved for ${fn} on ${new Date(dt).toDateString()} ✓`,'green');
+    document.getElementById('res-fname').value='';
+    document.getElementById('res-lname').value='';
+    document.getElementById('res-email').value='';
+    document.getElementById('res-date').value='';
+  },1200);
+}
+
+// ─── CONFETTI ────────────────────────────────────
+function launchConfetti(){
+  const c=document.getElementById('ty-confetti');
+  c.innerHTML='';
+  const cols=['#B07D3A','#F6EFE0','#5C3215','#C99A52','#fff','#2D7A4F'];
+  for(let i=0;i<55;i++){
+    const d=document.createElement('div');
+    d.className='ty-dot';
+    const sz=Math.random()*9+4;
+    d.style.cssText=`left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*2}s;`;
+    c.appendChild(d);
+  }
+}
+
+// ─── TOAST ───────────────────────────────────────
+function toast(msg,type=''){
+  const dock=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className='toast-msg'+(type?' '+type:'');
+  t.textContent=msg;
+  dock.appendChild(t);
+  setTimeout(()=>{t.classList.add('bye');setTimeout(()=>t.remove(),350);},3200);
+}
+
+// ─── LOADER ──────────────────────────────────────
+function showLoader(txt='Brewing…'){
+  const l=document.getElementById('loader');
+  l.classList.add('on');
+  document.getElementById('loader-txt').textContent=txt;
+}
+function hideLoader(){ document.getElementById('loader').classList.remove('on'); }
+
+// ─── HELPERS ─────────────────────────────────────
+function setT(id,v){ const el=document.getElementById(id); if(el)el.textContent=v; }
+
+// ─── INIT ────────────────────────────────────────
+renderPreviewMenu();
+</script>
+</body>
+</html>
